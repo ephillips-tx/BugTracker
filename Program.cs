@@ -1,6 +1,7 @@
 using BugTracker.Data;
 using BugTracker.Models;
 using BugTracker.Services;
+using BugTracker.Services.Factories;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -12,10 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 //var connectionString = builder.Configuration.GetConnectionString("default");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(DataUtility.GetConnectionString(builder.Configuration)));
+    options.UseNpgsql(DataUtility.GetConnectionString(builder.Configuration),
+    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
 builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddClaimsPrincipalFactory<BTUserClaimsPrincipalFactory>() // capture companyID as a claim
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
