@@ -9,22 +9,28 @@ namespace BugTracker.Services
 {
     public class BTProjectService : IBTProjectService
     {
+        #region Properties
         private readonly ApplicationDbContext _context;
         private readonly IBTRolesService _rolesService;
+        #endregion
 
+        #region Constructor
         public BTProjectService(ApplicationDbContext context, 
                                 IBTRolesService rolesService)
         {
             _context = context;
             _rolesService = rolesService;
         }
+        #endregion
 
+        #region Add New Project
         // CRUD - CREATE
         public async Task AddNewProjectAsync(Project project)
         {
             _context.Add(project);
             await _context.SaveChangesAsync();
         }
+        #endregion
 
         public async Task<bool> AddProjectManagerAsync(string userId, int projectId)
         {
@@ -127,10 +133,9 @@ namespace BugTracker.Services
             return teamMembers;
         }
 
-        public async Task<List<Project>> GetAllProjectsByCompany(int companyId)
+        public async Task<List<Project>> GetAllProjectsByCompanyAsync(int companyId)
         {
             // similar to BTCompanyInfoService because it may be used where BTCompanyInfoService is not used
-            // List<Project> projects = new();
 
             List<Project> projects = await _context.Projects.Where(p => p.CompanyId == companyId && p.Archived == false)  // Include = Eager Loading...
                                                             .Include(p => p.Members)               // Which members on this project
@@ -159,16 +164,38 @@ namespace BugTracker.Services
 
         public async Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName)
         {
-            List<Project> projects = await GetAllProjectsByCompany(companyId);
+            List<Project> projects = await GetAllProjectsByCompanyAsync(companyId);
             int priorityId = await LookupProjectPriorityId(priorityName);
 
             return projects.Where(p => p.ProjectPriorityId == priorityId).ToList();
         }
 
-        public async Task<List<Project>> GetArchivedProjectsByCompany(int companyId)
+        public async Task<List<Project>> GetArchivedProjectsByCompanyAsync(int companyId)
         {
-            List<Project> projects = await GetAllProjectsByCompany(companyId);
-            return projects.Where(p => p.Archived == true).ToList(); // "Where" clause returns type IEnumerable
+            List<Project> projects = await _context.Projects.Where(p => p.CompanyId == companyId && p.Archived == true)  // Include = Eager Loading...
+                                                            .Include(p => p.Members)               // Which members on this project
+                                                            .Include(p => p.Tickets)               // Which tickets are linked to this project
+                                                                .ThenInclude(t => t.Comments)         // Get comments associated with ticket
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.Attachments)      // Get ticket attachments
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.Notifications)    // Get ticket notifications
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.History)          // Get ticket history
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.DeveloperUser)    // Get ticket developer
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.OwnerUser)        // Get ticket owner
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.TicketStatus)     // Get status associated with ticket
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.TicketPriority)   // Get priority of ticket
+                                                            .Include(p => p.Tickets)
+                                                                .ThenInclude(t => t.TicketType)       // Get type of ticket
+                                                            .Include(p => p.ProjectPriority)       // What is the priority of the project
+                                                            .ToListAsync();                        // add results to list
+
+            return projects;
         }
 
         public Task<List<BTUser>> GetDevelopersOnProjectAsync(int projectId)
@@ -176,16 +203,34 @@ namespace BugTracker.Services
             throw new NotImplementedException();
         }
 
+        #region Get Project By Id
         // CRUD - READ
         public async Task<Project> GetProjectByIdAsync(int projectId, int companyId)
         {
+            //Project project = await _context.Projects
+            //                                .Include(p => p.Tickets)
+            //                                .Include(p => p.Members)
+            //                                .Include(p => p.ProjectPriority)
+            //                                .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+
             Project project = await _context.Projects
                                             .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.TicketPriority)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.TicketStatus)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.TicketType)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.DeveloperUser)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.OwnerUser)
                                             .Include(p => p.Members)
                                             .Include(p => p.ProjectPriority)
                                             .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+                                
             return project;
         }
+        #endregion
 
         public async Task<BTUser> GetProjectManagerAsync(int projectId)
         {
