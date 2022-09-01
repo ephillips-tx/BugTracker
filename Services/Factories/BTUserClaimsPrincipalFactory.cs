@@ -7,7 +7,7 @@ namespace BugTracker.Services.Factories
 {
     public class BTUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<BTUser, IdentityRole>
     {
-        // Default way of getting controcutor in place based on parent
+        // Default way of getting constructor in place based on parent
         public BTUserClaimsPrincipalFactory(UserManager<BTUser> userManager, 
                                             RoleManager<IdentityRole> roleManager,
                                             IOptions<IdentityOptions> optionsAccessor)

@@ -115,7 +115,7 @@ namespace BugTracker.Services
             if (invite != null)
             {
                 // determine invite date
-                DateTime inviteDate = invite.InviteDate.DateTime;
+                DateTime inviteDate = invite.InviteDate.Date;
 
                 // custom valudation of invite based on issued date
                 // In this case, we are allowing an invite to be valid for 7 days

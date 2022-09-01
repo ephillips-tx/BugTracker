@@ -21,7 +21,7 @@ namespace BugTracker.Models
 
         [DataType(DataType.Date)]
         [DisplayName("Date")]
-        public DateTimeOffset Created { get; set; }
+        public DateTime Created { get; set; }
 
         [Required]
         [DisplayName("Recipient")]

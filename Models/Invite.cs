@@ -8,10 +8,10 @@ namespace BugTracker.Models
         public int Id { get; set; }
 
         [DisplayName("Date Sent")]
-        public DateTimeOffset InviteDate { get; set; }
+        public DateTime InviteDate { get; set; }
 
         [DisplayName("Join Date")]
-        public DateTimeOffset JoinDate { get; set; }
+        public DateTime JoinDate { get; set; }
 
         [DisplayName("Code")]
         public Guid CompanyToken { get; set; }

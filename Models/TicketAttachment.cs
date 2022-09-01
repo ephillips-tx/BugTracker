@@ -13,7 +13,7 @@ namespace BugTracker.Models
         public int TicketId { get; set; }
 
         [DisplayName("File Date")]
-        public DateTimeOffset Created { get; set; }
+        public DateTime Created { get; set; }
 
         [DisplayName("Team Member")]
         public string UserId { get; set; }
