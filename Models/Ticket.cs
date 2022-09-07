@@ -17,11 +17,11 @@ namespace BugTracker.Models
         [DisplayName("Description")]
         public string Description { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [DisplayName("Created")]
         public DateTime Created { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [DisplayName("Updated")]
         public DateTime? Updated { get; set; }
 

@@ -6,6 +6,8 @@ namespace BugTracker.Services.Interfaces
     {
         // CRUD Methods
         public Task AddNewTicketAsync(Ticket ticket);
+        public Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment);
+        public Task AddTicketCommentAsync(TicketComment ticketComment);
         public Task UpdateTicketAsync(Ticket ticket);
         public Task<Ticket> GetTicketByIdAsync(int ticketId);
         public Task ArchiveTicketAsync(Ticket ticket);
@@ -16,6 +18,7 @@ namespace BugTracker.Services.Interfaces
         public Task<List<Ticket>> GetAllTicketsByPriorityAsync(int companyId, string priorityName);
         public Task<List<Ticket>> GetAllTicketsByStatusAsync(int companyId, string statusName);
         public Task<List<Ticket>> GetAllTicketsByTypeAsync(int companyId, string typeName);
+        public Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId);
         public Task<BTUser> GetTicketDeveloperAsync(int ticketId, int companyId);
         public Task<List<Ticket>> GetTicketsByRoleAsync(string role, string userId, int companyId);
         public Task<List<Ticket>> GetTicketsByUserIdAsync(string userId, int companyId);

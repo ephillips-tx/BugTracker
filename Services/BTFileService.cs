@@ -52,14 +52,8 @@ namespace BugTracker.Services
 
         public string GetFileIcon(string file)
         {
-            string fileImage = "default";
-
-            if(!string.IsNullOrWhiteSpace(file))
-            {
-                fileImage = Path.GetExtension(file).Replace(".", "");
-                return $"/img/png/{fileImage}.png";
-            }
-            return fileImage;
+            string ext = (!string.IsNullOrWhiteSpace(file)) ? Path.GetExtension(file).Replace(".", "") : "default";
+            return $"/img/contenttype/{ext}.png";
         }
     }
 }
