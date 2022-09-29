@@ -14,6 +14,7 @@ namespace BugTracker.Services
             _context = context;
         }
 
+        #region Add History 1
         public async Task AddHistoryAsync(Ticket oldTicket, Ticket newTicket, string userId)
         {
             if (oldTicket == null && newTicket != null)
@@ -144,7 +145,39 @@ namespace BugTracker.Services
             }
 
         }
+        #endregion
 
+        #region Add History 2
+        public async Task AddHistoryAsync(int ticketId, string model, string userId)
+        {
+            try
+            {
+                Ticket ticket = await _context.Tickets.FindAsync(ticketId);
+                string description = model.ToLower().Replace("ticket", "");
+                description = $"New {description} added to ticket: {ticket.Title}";
+
+                TicketHistory history = new()
+                {
+                    TicketId = ticket.Id,
+                    Property = model,
+                    OldValue = "",
+                    NewValue = "",
+                    Created = DateTime.UtcNow,
+                    UserId = userId,
+                    Description = description
+                };
+
+                await _context.TicketHistories.AddAsync(history);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region Get Company Ticket Histories 
         public async Task<List<TicketHistory>> GetCompanyTicketHistoriesAsync(int companyId)
         {
             try
@@ -168,7 +201,9 @@ namespace BugTracker.Services
                 throw;
             }
         }
+        #endregion
 
+        #region Get Project Ticket Histories
         public async Task<List<TicketHistory>> GetProjectTicketsHistoriesAsync(int projectId, int companyId)
         {
             try
@@ -187,5 +222,6 @@ namespace BugTracker.Services
                 throw;
             }
         }
+        #endregion
     }
 }

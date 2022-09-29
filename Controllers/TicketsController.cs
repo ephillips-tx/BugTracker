@@ -18,33 +18,26 @@ namespace BugTracker.Controllers
 {
     public class TicketsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTProjectService _projectService;
         private readonly IBTLookupService _lookupService;
         private readonly IBTTicketService _ticketService;
         private readonly IBTFileService _fileService;
+        private readonly IBTTicketHistoryService _historyService;
 
-        public TicketsController(ApplicationDbContext context,
-                                 UserManager<BTUser> userManager,
+        public TicketsController(UserManager<BTUser> userManager,
                                  IBTProjectService projectService,
                                  IBTLookupService lookupService,
                                  IBTTicketService ticketService,
-                                 IBTFileService fileService)
+                                 IBTFileService fileService,
+                                 IBTTicketHistoryService historyService)
         {
-            _context = context;
             _userManager = userManager;
             _projectService = projectService;
             _lookupService = lookupService;
             _ticketService = ticketService;
             _fileService = fileService;
-        }
-
-        // GET: Tickets
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.OwnerUser).Include(t => t.Project).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
-            return View(await applicationDbContext.ToListAsync());
+            _historyService = historyService;
         }
 
         public async Task<IActionResult> MyTickets()
@@ -103,6 +96,7 @@ namespace BugTracker.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpGet]
         public async Task<IActionResult> AssignDeveloper(int id)
         {
@@ -114,13 +108,29 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel model)
         {
             if(model.DeveloperId != null)
             {
-                await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                BTUser btUser = await _userManager.GetUserAsync(User);
+                Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(model.Ticket.Id);
+                try
+                {
+                    await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                // new ticket
+                Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(model.Ticket.Id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
+
+                return RedirectToAction(nameof(Details), new { id = model.Ticket.Id });
             }
 
             return RedirectToAction(nameof(AssignDeveloper), new { id = model.Ticket.Id });
@@ -176,17 +186,25 @@ namespace BugTracker.Controllers
 
             if (ModelState.IsValid)
             {
-                ticket.Created = DateTime.UtcNow;
-                ticket.OwnerUserId = btUser.Id;
-                ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(BTTicketStatus.New))).Value;
+                try
+                {
+                    ticket.Created = DateTime.UtcNow;
+                    ticket.OwnerUserId = btUser.Id;
+                    ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(BTTicketStatus.New))).Value;
 
-                await _ticketService.AddNewTicketAsync(ticket);
+                    await _ticketService.AddNewTicketAsync(ticket);
 
-                //TODO: add Ticket History
+                    Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
+                    await _historyService.AddHistoryAsync(null, newTicket, btUser.Id);
 
-                //TODO: add Ticket Notification
+                    //TODO: add Ticket Notification
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyTickets));
             }
 
             if (User.IsInRole(nameof(Roles.Admin)))
@@ -240,6 +258,7 @@ namespace BugTracker.Controllers
             if (ModelState.IsValid)
             {
                 BTUser btUser = await _userManager.GetUserAsync(User);
+                Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
 
                 try
                 {
@@ -258,10 +277,11 @@ namespace BugTracker.Controllers
                         throw; // throw error given from DB onto the stack
                     }
                 }
-                //TODO: Ticket History
+                
+                Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
 
-
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyTickets));
             }
 
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPrioritiesAsync(), "Id", "Name", ticket.TicketPriorityId);
@@ -283,6 +303,9 @@ namespace BugTracker.Controllers
                     ticketComment.Created = DateTime.UtcNow;
 
                     await _ticketService.AddTicketCommentAsync(ticketComment);
+
+                    //Add history
+                    await _historyService.AddHistoryAsync(ticketComment.TicketId,nameof(TicketComment), ticketComment.UserId);
                 }
                 catch (Exception)
                 {
@@ -301,14 +324,24 @@ namespace BugTracker.Controllers
 
             if(ModelState.IsValid && ticketAttachment.FormFile != null)
             {
-                ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
-                ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
-                ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
+                try
+                {
+                    ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+                    ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
+                    ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
 
-                ticketAttachment.Created = DateTime.UtcNow;
-                ticketAttachment.UserId = _userManager.GetUserId(User);
+                    ticketAttachment.Created = DateTime.UtcNow;
+                    ticketAttachment.UserId = _userManager.GetUserId(User);
 
-                await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+                    await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+
+                    await _historyService.AddHistoryAsync(ticketAttachment.TicketId, nameof(TicketAttachment), ticketAttachment.UserId);
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
                 statusMessage = "Success: New attachment added to ticket.";
             }
             else
@@ -320,6 +353,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Tickets/Archive/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         public async Task<IActionResult> Archive(int? id)
         {
             if (id == null)
@@ -338,6 +372,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Tickets/Archive/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost, ActionName("Archive")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveConfirmed(int id)
@@ -346,10 +381,11 @@ namespace BugTracker.Controllers
             ticket.Archived = true;
             await _ticketService.UpdateTicketAsync(ticket);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyTickets));
         }
-        
+
         // GET: Tickets/Restore/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         public async Task<IActionResult> Restore(int? id)
         {
             if (id == null)
@@ -368,6 +404,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Tickets/Archive/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost, ActionName("Restore")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int id)
@@ -376,7 +413,7 @@ namespace BugTracker.Controllers
             ticket.Archived = false;
             await _ticketService.UpdateTicketAsync(ticket);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyTickets));
         }
 
         public async Task<IActionResult> ShowFile(int id)

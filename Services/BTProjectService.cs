@@ -162,7 +162,7 @@ namespace BugTracker.Services
             return projects;
         }
 
-        public async Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName)
+        public async Task<List<Project>> GetAllProjectsByPriorityAsync(int companyId, string priorityName)
         {
             List<Project> projects = await GetAllProjectsByCompanyAsync(companyId);
             int priorityId = await LookupProjectPriorityId(priorityName);
@@ -200,6 +200,8 @@ namespace BugTracker.Services
 
         public Task<List<BTUser>> GetDevelopersOnProjectAsync(int projectId)
         {
+            // not currently used
+            // can use GetProjectMembersByRoleAsync and pass the role
             throw new NotImplementedException();
         }
 
@@ -300,6 +302,8 @@ namespace BugTracker.Services
 
         public Task<List<BTUser>> GetSubmittersOnProjectAsync(int projectId)
         {
+            // not currently used
+            // can use GetProjectMembersByRoleAsync and pass the role
             throw new NotImplementedException();
         }
 

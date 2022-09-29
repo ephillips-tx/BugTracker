@@ -12,12 +12,14 @@ using BugTracker.Models.ViewModels;
 using BugTracker.Services.Interfaces;
 using BugTracker.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using BugTracker.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IBTRolesService _rolesService;
         private readonly IBTLookupService _lookupService;
         private readonly IBTFileService _fileService;
@@ -25,30 +27,21 @@ namespace BugTracker.Controllers
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTCompanyInfoService _companyInfoService;
 
-        public UserManager<BTUser> UserManager { get; }
+        //public UserManager<BTUser> UserManager { get; }
 
-        public ProjectsController(ApplicationDbContext context,
-                                  IBTRolesService rolesService,
+        public ProjectsController(IBTRolesService rolesService,
                                   IBTLookupService lookupService,
                                   IBTFileService fileService,
                                   IBTProjectService projectService,
                                   UserManager<BTUser> userManager,
                                   IBTCompanyInfoService companyInfoService)
         {
-            _context = context;
             _rolesService = rolesService;
             _lookupService = lookupService;
             _fileService = fileService;
             _projectService = projectService;
             _userManager = userManager;
             _companyInfoService = companyInfoService;
-        }
-
-        // GET: Projects
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
-            return View(await applicationDbContext.ToListAsync());
         }
 
         public async Task<IActionResult> MyProjects()
@@ -86,6 +79,7 @@ namespace BugTracker.Controllers
             return View(projects);
         }
 
+        [Authorize(Roles="Admin")]
         [HttpGet]
         public async Task<IActionResult> AssignPM(int projectId)
         {
@@ -99,6 +93,7 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles="Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignPM(AssignPMViewModel model)
@@ -112,6 +107,7 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(AssignPM), new { projectId = model.Project.Id });
         }
 
+        [Authorize(Roles="Admin,ProjectManager")]
         [HttpGet]
         public async Task<IActionResult> AssignMembers(int id)
         {
@@ -130,6 +126,7 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignMembers(ProjectMembersViewModel model)
@@ -155,7 +152,7 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(AssignMembers), new { id = model.Project.Id });
         }
 
-
+        [Authorize(Roles="Admin")]
         public async Task<IActionResult> UnassignedProjects()
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -169,7 +166,7 @@ namespace BugTracker.Controllers
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -187,6 +184,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles="Admin,ProjectManager")]
         public async Task<IActionResult> Create()
         {
             // nullable int is different in c#... have to get the .Value if func returns nullable
@@ -204,6 +202,7 @@ namespace BugTracker.Controllers
         // POST: Projects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddProjectWithPMViewModel model)
@@ -236,7 +235,7 @@ namespace BugTracker.Controllers
                     }
 
                     // TODO: Redirect to All Projects
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(AllProjects));
 
                 }
                 catch (Exception)
@@ -252,6 +251,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             // nullable int is different in c#... have to get the .Value if func returns nullable
@@ -272,6 +272,7 @@ namespace BugTracker.Controllers
         // POST: Projects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AddProjectWithPMViewModel model)
@@ -299,13 +300,19 @@ namespace BugTracker.Controllers
                         await _projectService.AddProjectManagerAsync(model.PmId, model.Project.Id);
                     }
 
-                    // TODO: Redirect to All Projects
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(AllProjects));
 
                 }
-                catch (Exception)
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!await ProjectExists(model.Project.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw; // throw error given from DB onto the stack
+                    }
                 }
             }
 
@@ -313,9 +320,10 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Archive/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         public async Task<IActionResult> Archive(int? id)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -331,6 +339,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Projects/Archive/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost, ActionName("Archive")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveConfirmed(int id)
@@ -339,13 +348,14 @@ namespace BugTracker.Controllers
 
             await _projectService.ArchiveProjectAsync(project);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllProjects));
         }
 
         // GET: Projects/Restore/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         public async Task<IActionResult> Restore(int? id)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -361,6 +371,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Projects/Restore/5
+        [Authorize(Roles = "Admin,ProjectManager")]
         [HttpPost, ActionName("Restore")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int id)
@@ -369,12 +380,13 @@ namespace BugTracker.Controllers
 
             await _projectService.RestoreProjectAsync(project);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllProjects));
         }
 
-        private bool ProjectExists(int id)
+        private async Task<bool> ProjectExists(int id)
         {
-          return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
+            int companyId = User.Identity.GetCompanyId().Value;
+            return (await _projectService.GetAllProjectsByCompanyAsync(companyId)).Any(p => p.Id == id);
         }
     }
 }

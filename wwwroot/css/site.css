@@ -1,18 +1,30 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+html,
 body {
-  margin-bottom: 60px;
+    height: 100%;
+    width: 100%;
+}
+
+.landing-page-bg {
+    background-image: url('/img/kelly-sikkema-ecHIFXN_qiE-unsplash.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.login-panel-1 {
+    width: 20rem;
+    min-height: 40%;
+    position: absolute;
+    top: 13rem;
+    left: 5rem;
+    background-color: #fff;
+    z-index: 10000;
+}
+
+.login-panel-2 {
+    width: 22rem;
+    position: absolute;
+    top: 9rem;
+    left: 5rem;
+    background-color: #fff;
+    z-index: 10000;
 }

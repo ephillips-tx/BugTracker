@@ -5,11 +5,11 @@
     BTUser btUser = await UserManager.GetUserAsync(User);
 }
 
-<div class="dropdown py-sm-4 ms-auto ms-sm-0 flex-shrink-1">
+<div class="py-sm-2 mx-auto ms-sm-0 flex-shrink-1">
 
     @if (SignInManager.IsSignedIn(User))
     {
-        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-white" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="" width="28" height="28" class="rounded-circle">
             <span class="d-none d-sm-inline mx-1">@btUser.FirstName</span>
         </a>
@@ -24,9 +24,9 @@
     }
     else
     {
-        <a asp-area="Identity" asp-page="/Account/Login" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+        <a asp-area="Identity" asp-page="/Account/Login" class="d-flex align-items-center text-decoration-none dropdown-toggle text-white" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="" width="28" height="28" class="rounded-circle">
-            <span class="d-none d-sm-inline mx-1">Log In</span>
+            <span class="d-none d-sm-inline mx-auto">Try it now!</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
             <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Register</a></li>
