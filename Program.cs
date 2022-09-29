@@ -41,6 +41,9 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// fix for invalidcastexception  postgreSQL DateTime with kind invalid
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
