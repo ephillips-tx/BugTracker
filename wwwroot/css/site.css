@@ -1,3 +1,10 @@
+/*
+  primary colors
+  flatwhite: #f1f3f3
+  darkred: #3f0000
+  gold: #ff972b
+*/
+
 html,
 body {
     height: 100%;
@@ -8,6 +15,10 @@ body {
     background-image: url('/img/kelly-sikkema-ecHIFXN_qiE-unsplash.jpg');
     background-size: cover;
     background-repeat: no-repeat;
+}
+
+.bg-flatwhite {
+    background-color: #f1f3f3;
 }
 
 .login-panel-1 {
@@ -27,4 +38,26 @@ body {
     left: 5rem;
     background-color: #fff;
     z-index: 10000;
+}
+
+.amDark {
+    background-color: #30303d;
+    color: #fff;
+}
+
+#chartdiv {
+    width: 100%;
+    height: 500px;
+}
+
+
+.link-style, .link-style:active, .link-style:visited {
+    text-decoration: none;
+    color: inherit;
+}
+.link-style:hover {
+    color: #ff972b;
+}
+.x-sm {
+    font-size: x-small;
 }

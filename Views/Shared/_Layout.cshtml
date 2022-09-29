@@ -3,10 +3,16 @@
 @inject SignInManager<BTUser> SignInManager
 
 @{
+    string themeColor = "";
     string isLandingPage = "";
     if (ViewData["Title"].ToString() == "Home Page" || ViewData["Title"].ToString() == "Log in")
     {
         isLandingPage = "landing-page-bg";
+        themeColor = "bg-dark";
+    }
+    else 
+    {
+        themeColor = "bg-flatwhite text-dark";
     }
 }
 
@@ -29,7 +35,33 @@
 <body>
     <div class="container-fluid overflow-hidden">
         <div class="row vh-100 overflow-auto">
-            <div class="col-12 col-sm-3 col-md-2 px-0 px-sm-2 bg-dark d-flex sticky-top">
+            @if (String.IsNullOrEmpty(isLandingPage))
+            {
+                <div class="col-12 border border-bottom-2">
+                    <div class="row py-2">
+                        <div class="col-2"></div>
+                        <form method="post" class="col-5">
+                            <div class="input-group w-50 border-0">
+                                <input type="text" class="form-control" placeholder="Search here..." />
+                                <button type="submit" class="input-group-text border-0"><i class="bi bi-search"></i></button>
+                            </div>
+                        </form>
+                        <div class="col-5 d-flex justify-content-end align-items-center">
+                            <a asp-controller="Tickets" asp-action="Create" class="btn btn-sm btn-primary mx-3">New Ticket</a>
+                            <a href="/" class="text-decoration-none d-flex position-relative mx-4 px-2 link-style">
+                                <i class="bi bi-bell"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger x-sm">
+                                    +99
+                                    <span class="visually-hidden">unread notifications</span>
+                                </span>
+                            </a>
+                            <i class="bi bi-sliders mx-4"></i>
+                            <i class="bi bi-box-arrow-left mx-4"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col-12 col-sm-3 col-md-2 px-0 px-sm-2 d-flex sticky-top @themeColor">
                 @if (!String.IsNullOrEmpty(isLandingPage))
                 {
                     if(ViewData["Title"].ToString() == "Home Page")
@@ -44,31 +76,28 @@
                                 <h5>BugTracker Landing Page</h5>
                             </div>
                             <div class="btn btn-block btn-warning text-center my-auto">
-                                <partial name="_LoginPartial" />
+                                <a class="text-white text-decoration-none" asp-area="Identity" asp-page="/Account/Login">Try it now!</a>
                             </div>
                         </div>
                     }
                 }
-                <div class="d-inline-block">
-                    @if(String.IsNullOrEmpty(isLandingPage))
-                    {
-                    }
+                <div class="ms-4">
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <partial name="_LoginPartial" />
                         <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start" id="menu">
                             <li class="nav-item">
-                                <a asp-area="" asp-controller="Home" asp-action="Dashboard" class="nav-link px-sm-0 px-2">
+                                <a asp-area="" asp-controller="Home" asp-action="Dashboard" class="nav-link link-style px-sm-0 px-2">
                                     <i class="fs-5 bi-house"></i><span class="ms-1 d-none d-sm-inline">Dashboard</span>
                                 </a>
                             </li>
                             <li>
-                                <a asp-area="" asp-controller="Companies" asp-action="Index" class="nav-link px-sm-0 px-2">
+                                <a asp-area="" asp-controller="Companies" asp-action="Index" class="nav-link link-style px-sm-0 px-2">
                                     <i class="fs-5 bi-building"></i><span class="ms-1 d-none d-sm-inline">Company</span>
                                 </a>
                             </li>
                             <li class="dropdown">
-                                <a asp-area="" asp-controller="Projects" asp-action="Index" class="nav-link dropdown-toggle px-sm-0 px-2" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a asp-area="" asp-controller="Projects" asp-action="Index" class="nav-link link-style dropdown-toggle px-sm-0 px-2" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fs-5 bi-file-earmark-ppt"></i><span class="ms-1 d-none d-sm-inline">Projects</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
@@ -89,7 +118,7 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a asp-area="" asp-controller="Tickets" asp-action="Index" class="nav-link dropdown-toggle px-sm-0 px-2" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a asp-area="" asp-controller="Tickets" asp-action="Index" class="nav-link link-style dropdown-toggle px-sm-0 px-2" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fs-5 bi-file-earmark-font"></i><span class="ms-1 d-none d-sm-inline">Tickets</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
@@ -107,7 +136,7 @@
                                 </ul>
                             </li>
                             <li>
-                                <a asp-area="" asp-controller="Notifications" asp-action="Index" class="nav-link px-sm-0 px-2">
+                                <a asp-area="" asp-controller="Notifications" asp-action="Index" class="nav-link link-style px-sm-0 px-2">
                                     <i class="fs-5 bi-mailbox2"></i><span class="ms-1 d-none d-sm-inline">Notifications</span>
                                 </a>
                             </li>
@@ -116,7 +145,7 @@
                 </div>
             </div>
             <div class="col col-md-10 d-flex flex-column h-100 @isLandingPage">
-                <main class="row">
+                <main class="row @themeColor">
                     @RenderBody()
                 </main>
             </div>

@@ -213,8 +213,6 @@ namespace BugTracker.Data
             }
         }
 
-
-
         public static async Task SeedDefaultUsersAsync(UserManager<BTUser> userManager)
         {
             //Seed Default Admin User
