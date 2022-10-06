@@ -11,16 +11,36 @@
 	var defaultIconSrc = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
 }
 
-<div class="fw-bolder">
-	<a href="/" class="link-style">
-		<i class="bi bi-arrow-left"></i>
-	</a>
-	<span>Dashboard</span>
-	<div>
-		<a asp-action="Dashboard" class="link-style">
-			<i class="bi bi-house"></i>
+<div class="row fw-bolder mt-3 sticky-top blk-grad rounded">
+	<div class="col-2">
+		<a href="/" class="link-style">
+			<i class="bi bi-arrow-left"></i>
 		</a>
+		<span>Dashboard</span>
 	</div>
+	<div class="col-10">
+        <div class="row py-2">
+            <div class="col-sm-3 col-md-5"></div>
+            <form method="post" class="col-sm-2 col-md-3">
+                <div class="input-group border-0">
+                    <input type="text" class="form-control" placeholder="Search here..." />
+                    <button type="submit" class="input-group-text border-0"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+            <div class="col-sm-7 col-md-4 d-flex justify-content-end align-items-center">
+                <a asp-controller="Tickets" asp-action="Create" class="btn btn-sm btn-primary mx-2">New Ticket</a>
+                <a href="/" class="text-decoration-none d-flex position-relative mx-4 px-2 link-style">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger x-sm">
+                        +99
+                        <span class="visually-hidden">unread notifications</span>
+                    </span>
+                </a>
+                <i class="bi bi-sliders mx-3"></i>
+                <i class="bi bi-box-arrow-left mx-3"></i>
+            </div>
+        </div>
+    </div>
 </div>
 @*<a href="javascript:void(0);">
 	@if (btUser?.AvatarFileData != null)
@@ -33,12 +53,12 @@
 	}
 </a>*@
 
-<div>
-	<div classxfont-weighteighteightgetainer-fluid">
-		<div class="row mt-2">
+<div class="my-4">
+	<div class="mx-4">
+		<div class="row mb-3">
 			<div class="col-lg-3 col-md-6 col-sm-6">
 				<a asp-action="AllProjects" asp-controller="Projects" style="text-decoration:none">
-					<div class="card text-center bg-info">
+					<div class="card text-center" id="panel1">
 						<div class="body">
 							<div class="p-5 text-light">
 								<h3>@Model.Projects.Where(p => p.StartDate < DateTime.Now && p.EndDate > DateTime.Now).Count()</h3>
@@ -50,7 +70,7 @@
 			</div>
 			<div class="col-lg-3 col-md-6 col-sm-6">
 				<a asp-action="AllTickets" asp-controller="Tickets" style="text-decoration:none">
-					<div class="card text-center bg-secondary">
+					<div class="card text-center" id="panel2">
 						<div class="body">
 							<div class="p-5 text-light">
 								<h3>@Model.Tickets.Count()</h3>
@@ -61,7 +81,7 @@
 				</a>
 			</div>
 			<div class="col-lg-3 col-md-6 col-sm-6">
-				<div class="card text-center bg-warning">
+				<div class="card text-center" id="panel3">
 					<div class="body">
 						<div class="p-5 text-light">
 							<h3>@Model.Tickets.Where(t => string.IsNullOrEmpty(t.DeveloperUserId)).Count()</h3>
@@ -71,7 +91,7 @@
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-6 col-sm-6">
-				<div class="card text-center bg-dark">
+				<div class="card text-center" id="panel4">
 					<div class="body">
 						<div class="p-5 text-light">
 							<h3>
@@ -87,52 +107,62 @@
 				</div>
 			</div>
 		</div>
-		<div class="row gy-2">
+		<div class="row">
 			<div class="col-md-12 col">
-				<div class="row col-cols-4 mt-5 bg-secondary">
-					<div class="card col m-1 p-2">
+				<div class="row col-cols-4 mt-5">
+					<div class="card col mx-3 p-2 dash-card">
+						<div class="card-header position-relative">
+							<div class="inner-header" id="chart1">
+								<div id="chart3D"></div>
+							</div>
+						</div>
 						<div class="card-body">
 							<h5>Projects by Priority</h5>
 							<p>[Google Charts]</p>
-							<div id="chart3D"></div>
 						</div>
 					</div>
-					<div class="card col m-1 p-2">
+					<div class="card col mx-3 p-2 dash-card">
+						<div class="card-header position-relative">
+							<div class="inner-header" id="chart2">
+								<div id="donut"></div>
+							</div>
+						</div>
 						<div class="card-body">
 							<h5>Project Tickets Count (%)</h5>
 							<p>[Google Charts]</p>
-							<div id="donut"></div>
 						</div>
 					</div>
-					<div class="card col m-1 p-2">
+					<div class="card col mx-3 p-2 dash-card">
+						<div class="card-header position-relative">
+							<div class="inner-header" id="chart3">
+								<!-- Morris: Donut -->
+								<div class="chart chart-md" id="morrisTicketPriority"></div>
+								<div id="legend" class="donut-legend" style="font-size:x-small"></div>
+							</div>
+						</div>
 						<div class="card-body">
 							<h5>Tickets by Priority</h5>
 							<p>[Morris Charts]</p>
-							<!-- Morris: Donut -->
-							<div class="col-md-12">
-								<div id="legend" class="donut-legend" style="font-size:x-small"></div>
-							</div>
-							<div class="col-md-12">
-								<div class="chart chart-md" id="morrisTicketPriority"></div>
-							</div>
 						</div>
 					</div>
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							<h5>Tickets by Status</h5>
-							<p>[ChartJS]</p>
-							<!-- ChartJS: Pie/Doughnut -->
-							<div class="col-md-12">
+					<div class="card col mx-3 p-2 dash-card">
+						<div class="card-header position-relative">
+							<div class="inner-header" id="chart4">
+								<!-- ChartJS: Pie/Doughnut -->
 								<!--  Chart.js Canvas Tag -->
 								<canvas id="donutChart"></canvas>
 							</div>
+						</div>
+						<div class="card-body">
+							<h5>Tickets by Status</h5>
+							<p>[ChartJS]</p>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="row gy-2">
-			<div class="cols mt-5 bg-secondary">
+		<div class="row g-2">
+			<div class="cols mt-5">
 				<div class="card col m-1 p-2">
 					<div class="card-body" style="height:600px">
 						<h5>Project: Tickets vs Developers</h5>
@@ -143,8 +173,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="row gy-2">
-			<div class="cols mt-5 bg-secondary">
+		<div class="row g-2">
+			<div class="cols mt-5">
 				<div class="card col m-1 p-2">
 					<div class="card-body" style="height:600px;overflow-y:auto;">
 						<h5>Project: Tickets vs Developers</h5>
@@ -157,7 +187,7 @@
 		</div>
 	</div>
 	<hr />
-	<div class="mt-5 ">
+	<div class="mt-5 mx-4">
 		<div class="row">
 			@* Projects Table *@
 			<div class="col">
@@ -202,7 +232,7 @@
 			</div>
 			@* Tickets Table *@
 			<div class="col">
-				<div class="bg-secondary">
+				<div class="">
 					<div class="card m-1 p-2">
 						<div class="card-header">
 							<h2>Tickets</h2>
@@ -261,13 +291,13 @@
 				</div>
 			</div>
 			<div class="col-md-2 ">
-				<div class="bg-dark">
+				<div class="">
 					<div class="card m-1 p-2">
 						<div class="card-header">
 							<h2>Members</h2>
 							<hr />
 						</div>
-						<div class="card-body" style="overflow-y:auto;height:600px;background-color:antiquewhite">
+						<div class="card-body" style="overflow-y:auto;height:600px;">
 							@foreach(BTUser member in Model.Members)
 							{
 								<div class="">
@@ -285,6 +315,22 @@
 </div>
 
 @section Scripts{
+	<script>
+		var el = document.getElementById("chart1");
+		var cardStyle = el.currentStyle || getComputedStyle(el, null);
+		var bsColors = {
+			primary: "#0d6efd",
+		    secondary: "#6c757d",
+			success: "#198754",
+			info: "#0dcaf0",
+			warning: "#ffc107",
+			danger: "#dc3545",
+			light: "#f8f9fa",
+			dark: "#212529",
+			maroon: "#800000"
+		};
+		//console.log(elStyle);
+	</script>
 	<!--Google Charts-->
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
@@ -305,8 +351,12 @@
 					var options = {
 						title: 'Project Priority',
 						is3D: true,
+						backgroundColor: bsColors.maroon,
 						chartArea: { left: 0,bottom: 15,width: '100%', height: '100%'},
-						legend: { position: 'bottom' }
+						legend: { 
+							position: 'bottom',
+							textStyle: {color: cardStyle.color}
+						}
 
 					};
 
@@ -339,8 +389,12 @@
 					var options = {
 						title: 'Company Ticket Distribution',
 						pieHole: 0.3,
+						backgroundColor: bsColors.warning,
 						chartArea: { left: 0,bottom: 15,width: '100%', height: '100%'},
-						legend: { position: 'bottom' }
+						legend: {
+							position: 'bottom',
+							textStyle: { color: cardStyle.color }
+						}
 					};
 					var chart = new google.visualization.PieChart($("#donut")[0]);
 					chart.draw(data, options);
@@ -384,17 +438,30 @@
 				data: morrisDonutData,
 				colors: ['#0088cc', '#734ba9', '#E36159', '#ff993b']
 			});
-
+			
 			donutChart.options.data.forEach(function(label, i) {
-				var legendItem = $('<span></span>').text( label['label'] + ": " +label['value']).prepend('<span>&nbsp;</span>');
+				var legendItem = $('<span></span>').text(label['label'] + ": " + label['value']).prepend('<span></span>');
 				legendItem.find('span')
-				  .css('backgroundColor', donutChart.options.colors[i])
-				  .css('width', '20px')
+				  .css('backgroundColor', bsColors.success)
+				  .css('width', '0px')
 				  .css('display', 'inline-block')
-				  .css('margin', '10px');
+				  .css('margin', '3%');
 				$('#legend').append(legendItem)
 			});
+			
 		};
+		/* ********************** 
+			SVG Adjustments:
+			  color, position
+		*********************** */
+		var svgText = document.querySelectorAll('text');
+		for(var i =0; i < svgText.length; i++){
+			svgText[i].attributes[5].value = cardStyle.color;
+			//console.log(svgText[i]);
+		}
+		var morrisChart = document.getElementById('morrisTicketPriority').firstChild;
+		//morrisChart.style.top = '-20px';
+		morrisChart.style.height = '200px';
 	</script>
 
 	<!-- *** Begin Chart JS Pie/Donut *** -->
