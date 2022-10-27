@@ -13,7 +13,7 @@
     }
     else 
     {
-        themeColor = "blk-grad text-light";
+        themeColor = "bg-lightblack text-light";
         navTheme = "blk-grad-top text-light";
     }
 }
@@ -37,7 +37,7 @@
 <body>
     <div class="container-fluid overflow-hidden">
         <div class="row vh-100 overflow-auto">
-            <div class="col-12 col-sm-3 col-md-2 px-0 px-sm-2 d-flex sticky-top @themeColor">
+            <div class="col col-md-3 col-xl-2 px-0 px-sm-2 d-flex sticky-top @themeColor">
                 @********************
                     Log In area
                 *********************@
@@ -126,7 +126,7 @@
                     }
                 </div>
             </div>
-            <div class="col col-md-10 d-flex flex-column h-100 @isLandingPage">
+            <div class="col col-md-9 col-xl-10 d-flex flex-column h-100 @isLandingPage">
                 <main class="row @themeColor">
                     @RenderBody()
                 </main>

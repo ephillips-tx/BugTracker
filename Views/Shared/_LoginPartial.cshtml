@@ -9,11 +9,11 @@
     string roleName = (await RolesService.GetUserRolesAsync(btUser)).FirstOrDefault();
 }
 
-<div class="py-sm-2 ps-2 mx-auto ms-sm-0 flex-shrink-1">
+<div class="py-sm-2 mx-auto ms-sm-0 flex-shrink-1">
     
     @if (SignInManager.IsSignedIn(User))
     {
-        <div class="ms-2">
+        <div class="">
             <div class="pb-0 mb-0">Welcome,</div>
             <span class="badge bg-dark">@roleName</span>
             <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle link-style" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">

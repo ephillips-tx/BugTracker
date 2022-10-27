@@ -56,10 +56,13 @@
 <div class="my-4">
 	<div class="mx-4">
 		<div class="row mb-3">
-			<div class="col-lg-3 col-md-6 col-sm-6">
+			<div class="col-lg-3 col-md-6 col-sm-6 mt-4">
 				<a asp-action="AllProjects" asp-controller="Projects" style="text-decoration:none">
-					<div class="card text-center" id="panel1">
-						<div class="body">
+					<div class="card text-center dash-card">
+						<div class="position-relative">
+							<div class="d-flex align-items-center rounded text-light" id="panel1">
+								<i class="fs-5 bi-file-earmark-ppt mx-auto"></i>
+							</div>
 							<div class="p-5 text-light">
 								<h3>@Model.Projects.Where(p => p.StartDate < DateTime.Now && p.EndDate > DateTime.Now).Count()</h3>
 								<span>Active Projects</span>
@@ -68,10 +71,13 @@
 					</div>
 				</a>
 			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6">
+			<div class="col-lg-3 col-md-6 col-sm-6 mt-4">
 				<a asp-action="AllTickets" asp-controller="Tickets" style="text-decoration:none">
-					<div class="card text-center" id="panel2">
-						<div class="body">
+					<div class="card text-center dash-card">
+						<div class="position-relative">
+							<div class="d-flex align-items-center rounded text-light" id="panel2">
+								<i class="fs-5 bi-file-earmark-font mx-auto"></i>
+							</div>
 							<div class="p-5 text-light">
 								<h3>@Model.Tickets.Count()</h3>
 								<span>Total Tickets</span>
@@ -80,9 +86,12 @@
 					</div>
 				</a>
 			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6">
-				<div class="card text-center" id="panel3">
-					<div class="body">
+			<div class="col-lg-3 col-md-6 col-sm-6 mt-4">
+				<div class="card text-center dash-card">
+					<div class="position-relative">
+						<div class="d-flex align-items-center rounded text-light" id="panel3">
+							<i class="fs-5 bi-bug mx-auto"></i>
+						</div>
 						<div class="p-5 text-light">
 							<h3>@Model.Tickets.Where(t => string.IsNullOrEmpty(t.DeveloperUserId)).Count()</h3>
 							<span>Unassigned Tickets</span>
@@ -90,9 +99,12 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6">
-				<div class="card text-center" id="panel4">
-					<div class="body">
+			<div class="col-lg-3 col-md-6 col-sm-6 mt-4">
+				<div class="card text-center dash-card">
+					<div class="position-relative">
+						<div class="d-flex align-items-center rounded text-light" id="panel4">
+							<i class="fs-5 bi-bricks mx-auto"></i>
+						</div>
 						<div class="p-5 text-light">
 							<h3>
 								@(
@@ -109,76 +121,84 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12 col">
-				<div class="row col-cols-4 mt-5">
-					<div class="card col mx-3 p-2 dash-card">
-						<div class="card-header position-relative">
-							<div class="inner-header" id="chart1">
-								<div id="chart3D"></div>
+				<div class="row mt-5">
+					<div class="col-12 col-sm-6 col-md-4">
+						<div class="card p-2 dash-card">
+							<div class="card-header-chart position-relative rounded pt-3 mx-auto" id="chart1">
+								<div class="inner-header">
+									<div id="chart3D"></div>
+								</div>
 							</div>
-						</div>
-						<div class="card-body">
-							<h5>Projects by Priority</h5>
-							<p>[Google Charts]</p>
+							<div class="card-body">
+								<h5>Projects by Priority</h5>
+								<p class="text-pink">[Google Charts]</p>
+							</div>
 						</div>
 					</div>
-					<div class="card col mx-3 p-2 dash-card">
-						<div class="card-header position-relative">
-							<div class="inner-header" id="chart2">
-								<div id="donut"></div>
+					<div class="col-12 col-sm-6 col-md-4">
+						<div class="card p-2 dash-card">
+							<div class="card-header-chart position-relative rounded pt-3 mx-auto" id="chart2">
+								<div class="inner-header">
+									<div id="donut"></div>
+								</div>
 							</div>
-						</div>
-						<div class="card-body">
-							<h5>Project Tickets Count (%)</h5>
-							<p>[Google Charts]</p>
+							<div class="card-body">
+								<h5>Project Tickets Count (%)</h5>
+								<p class="text-pink">[Google Charts]</p>
+							</div>
 						</div>
 					</div>
-					<div class="card col mx-3 p-2 dash-card">
-						<div class="card-header position-relative">
-							<div class="inner-header" id="chart3">
-								<!-- Morris: Donut -->
-								<div class="chart chart-md" id="morrisTicketPriority"></div>
-								<div id="legend" class="donut-legend" style="font-size:x-small"></div>
+					<div class="col-12 col-sm-6 col-md-4">
+						<div class="card p-2 dash-card">
+							<div class="card-header-chart position-relative rounded pt-3 mx-auto" id="chart3">
+								<div class="inner-header">
+									<!-- Morris: Donut -->
+									<div class="chart chart-md" id="morrisTicketPriority"></div>
+									<div id="legend" class="donut-legend" style="font-size:x-small"></div>
+								</div>
 							</div>
-						</div>
-						<div class="card-body">
-							<h5>Tickets by Priority</h5>
-							<p>[Morris Charts]</p>
-						</div>
-					</div>
-					<div class="card col mx-3 p-2 dash-card">
-						<div class="card-header position-relative">
-							<div class="inner-header" id="chart4">
-								<!-- ChartJS: Pie/Doughnut -->
-								<!--  Chart.js Canvas Tag -->
-								<canvas id="donutChart"></canvas>
+							<div class="card-body">
+								<h5>Tickets by Priority</h5>
+								<p class="text-pink">[Morris Charts]</p>
 							</div>
-						</div>
-						<div class="card-body">
-							<h5>Tickets by Status</h5>
-							<p>[ChartJS]</p>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="row g-2">
-			<div class="cols mt-5">
-				<div class="card col m-1 p-2">
+		<div class="row mt-5 align-items-center">
+			<div class="col-12 col-md-9">
+				<div class="card dash-card col m-1 p-2">
 					<div class="card-body" style="height:600px">
 						<h5>Project: Tickets vs Developers</h5>
-						<p>[amCharts]</p>
+						<p class="text-pink">[amCharts]</p>
 						<!-- HTML -->
 						<div id="chartdiv"></div>
 					</div>
 				</div>
 			</div>
+			<div class="col col-md-3">
+				<div class="card p-2 dash-card">
+					<div class="card-header-chart position-relative rounded" id="chart4">
+						<div class="inner-header px-5">
+							<!-- ChartJS: Pie/Doughnut -->
+							<!--  Chart.js Canvas Tag -->
+							<canvas id="donutChart"></canvas>
+						</div>
+					</div>
+					<div class="card-body">
+						<h5>Tickets by Status</h5>
+						<p class="text-pink">[ChartJS]</p>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="row g-2">
 			<div class="cols mt-5">
-				<div class="card col m-1 p-2">
-					<div class="card-body" style="height:600px;overflow-y:auto;">
+				<div class="card dash-card col m-1 p-2">
+					<div class="card-body" style="height:600px" id="plotBody">
 						<h5>Project: Tickets vs Developers</h5>
-						<p>[Plotly]</p>	
+						<p class="text-pink">[Plotly]</p>
 						<!-- HTML -->
 						<div id="plotlyChart"></div>
 					</div>
@@ -187,19 +207,19 @@
 		</div>
 	</div>
 	<hr />
-	<div class="mt-5 mx-4">
+	<div class="my-5 mx-4">
 		<div class="row">
 			@* Projects Table *@
-			<div class="col">
-				<div class="bg-secondary">
-					<div class="card m-1 p-2">
+			<div class="col-12 col-lg-6 mb-3">
+				<div class="">
+					<div class="card dash-card m-1 p-2">
 						<div class="card-header">
 							<h2>Projects</h2>
 						</div>
 						<div class="card-body">
 							<div class="table-responsive" style="overflow-y:auto;height:600px;">
 								<table class="table table-hover">
-									<thead class="">
+									<thead class="text-pink">
 										<tr>
 											<th>Name</th>
 											<th>Start Date</th>
@@ -212,10 +232,27 @@
 										@foreach (var project in Model.Projects.OrderByDescending(d => d.StartDate))
 										{
 											<tr>
-												<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@project.Id" style="color:black"><strong>@project.Name</strong></a> </td>
-												<td><span style="font-size:small">@project.StartDate.ToString("MM.dd.yyyy")</span></td>
-												<td><span style="font-size:small">@project.EndDate.ToString("MM.dd.yyyy")</span></td>
-												<td><span class="badge bg-dark">@project.ProjectPriority?.Name</span></td>
+												<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@project.Id" style="color:#f8f9fa"><strong>@project.Name</strong></a> </td>
+												<td><span style="font-size:small;color: #f8f9fa">@project.StartDate.ToString("MM.dd.yyyy")</span></td>
+												<td><span style="font-size:small;color: #f8f9fa">@project.EndDate.ToString("MM.dd.yyyy")</span></td>
+												@{
+													string badgeColor = "bg-info";
+													switch (project.ProjectPriority?.Name)
+													{
+														case "Urgent":
+															badgeColor = "bg-danger";
+															break;
+														case "High":
+															badgeColor = "bg-warning";
+															break;
+														case "Medium":
+															badgeColor = "bg-primary";
+															break;
+														default:
+															break;
+													}
+												}
+												<td><span class="badge @badgeColor">@project.ProjectPriority?.Name</span></td>
 												<td>
 													<a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-controller="Project" asp-route-id="@project.Id"><i class="fs-5 bi-justify"></i></a>
 												</td>
@@ -231,16 +268,16 @@
 				</div>
 			</div>
 			@* Tickets Table *@
-			<div class="col">
+			<div class="col-12 col-lg-6 mb-3">
 				<div class="">
-					<div class="card m-1 p-2">
+					<div class="card dash-card m-1 p-2">
 						<div class="card-header">
 							<h2>Tickets</h2>
 						</div>
 						<div class="card-body">
 							<div class="table-responsive" style="overflow-y:auto;height:600px;">
 								<table class="table table-hover">
-									<thead class="">
+									<thead class="text-pink">
 										<tr>
 											<th>Title</th>
 											<th>Developer</th>
@@ -254,11 +291,11 @@
 										@foreach (var ticket in Model.Tickets.OrderByDescending(d => d.Created))
 										{
 											<tr>
-												<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" style="color:black"><strong>@ticket.Title</strong></a> </td>
+												<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" style="color:#f8f9fa"><strong>@ticket.Title</strong></a> </td>
 												<td>
 													@if (ticket.DeveloperUserId != null)
 													{
-														@ticket.DeveloperUser?.FullName
+														<span class="text-light">@ticket.DeveloperUser?.FullName</span>
 													}
 													else
 													{
@@ -273,8 +310,25 @@
 												{
 													<td><span class="badge bg-secondary rounded-pill">@ticket.TicketStatus.Name </span></td>
 												}
-												<td><span class="badge bg-dark">@ticket.TicketPriority.Name </span></td>
-												<td><span style="font-size:small">@ticket.Created.ToString("MM-dd-yyyy")</span></td>
+												@{
+													string badgeColor = "bg-info";
+													switch (ticket.TicketPriority.Name)
+													{
+														case "Urgent":
+															badgeColor = "bg-danger";
+															break;
+														case "High":
+															badgeColor = "bg-warning";
+															break;
+														case "Medium":
+															badgeColor = "bg-primary";
+															break;
+														default:
+															break;
+													}
+												}
+												<td><span class="badge @badgeColor">@ticket.TicketPriority.Name </span></td>
+												<td><span style="font-size:small;color: #f8f9fa">@ticket.Created.ToString("MM-dd-yyyy")</span></td>
 												<td>
 													<a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id"><i class="fs-5 bi-justify"></i></a>
 												</td>
@@ -290,9 +344,10 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-2 ">
+			@*Members Table*@
+			<div class="col-md-6">
 				<div class="">
-					<div class="card m-1 p-2">
+					<div class="card dash-card m-1 p-2">
 						<div class="card-header">
 							<h2>Members</h2>
 							<hr />
@@ -302,7 +357,7 @@
 							{
 								<div class="">
 									<span style="font-weight:bold">@member.FullName</span>
-									<h6 style="font-size:small">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</h6>
+									<h6 style="font-size:small;color:deeppink">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</h6>
 								</div>
 								<hr />
 							}
@@ -318,6 +373,8 @@
 	<script>
 		var el = document.getElementById("chart1");
 		var cardStyle = el.currentStyle || getComputedStyle(el, null);
+		var chart1Color = document.getElementById("panel4").style.backgroundColor;
+		var chart2Color = document.getElementById("panel3").style.backgroundColor;
 		var bsColors = {
 			primary: "#0d6efd",
 		    secondary: "#6c757d",
@@ -327,9 +384,10 @@
 			danger: "#dc3545",
 			light: "#f8f9fa",
 			dark: "#212529",
-			maroon: "#800000"
+			maroon: "#800000",
+			transparent: "rgba(0,0,0,0)"
 		};
-		//console.log(elStyle);
+
 	</script>
 	<!--Google Charts-->
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -351,7 +409,7 @@
 					var options = {
 						title: 'Project Priority',
 						is3D: true,
-						backgroundColor: bsColors.maroon,
+						backgroundColor: chart1Color,
 						chartArea: { left: 0,bottom: 15,width: '100%', height: '100%'},
 						legend: { 
 							position: 'bottom',
@@ -389,7 +447,7 @@
 					var options = {
 						title: 'Company Ticket Distribution',
 						pieHole: 0.3,
-						backgroundColor: bsColors.warning,
+						backgroundColor: chart2Color,
 						chartArea: { left: 0,bottom: 15,width: '100%', height: '100%'},
 						legend: {
 							position: 'bottom',
@@ -442,7 +500,7 @@
 			donutChart.options.data.forEach(function(label, i) {
 				var legendItem = $('<span></span>').text(label['label'] + ": " + label['value']).prepend('<span></span>');
 				legendItem.find('span')
-				  .css('backgroundColor', bsColors.success)
+				  .css('backgroundColor', "#333")
 				  .css('width', '0px')
 				  .css('display', 'inline-block')
 				  .css('margin', '3%');
@@ -456,7 +514,7 @@
 		*********************** */
 		var svgText = document.querySelectorAll('text');
 		for(var i =0; i < svgText.length; i++){
-			svgText[i].attributes[5].value = cardStyle.color;
+			//svgText[i].attributes[5].value = cardStyle.color;
 			//console.log(svgText[i]);
 		}
 		var morrisChart = document.getElementById('morrisTicketPriority').firstChild;
@@ -505,7 +563,7 @@
 			responsive: true,
 		};
 		//Create pie or douhnut chart
-		// You can switch between pie and douhnut using the method below.
+		// You can switch between pie and doughnut using the method below.
 		new Chart(donutChartCanvas, {
 			type: 'doughnut',
 			data: donutData,
@@ -513,6 +571,7 @@
 		});
 	</script>
 	<!-- *** End Chart JS Donut *** -->
+
 	<!-- *** Begin AM Charts *** -->
 	<!-- Resources -->
 	<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
@@ -561,6 +620,7 @@
 
 						var valueLabel = series.bullets.push(new am4charts.LabelBullet());
 						valueLabel.label.text = "{valueX}";
+						valueLabel.label.fill = am4core.color("#fff");
 						valueLabel.label.horizontalCenter = "left";
 						valueLabel.label.dx = 10;
 						valueLabel.label.hideOversized = false;
@@ -589,12 +649,13 @@
 			}
 		});
 	</script>
-
 	<!-- *** End AM Charts *** -->
+
 	<!--  Plotly Charts  -->
 	<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-2.4.2.min.js'></script>
 	<script>
+		document.getElementById('plotlyChart').style.width = "80%"; // adjust svg size by adjusting container size
 		$.ajax({
 			type: "POST",
 			url: "/Home/PlotlyBarChart",
@@ -604,9 +665,16 @@
 			success: function (result) {
 				var data = result;
 
-				var layout = { barmode: 'group' };
+				// layout doesn't appear to be doing anything at all
+				var layout = { 
+				//	autosize: false,
+				//	barmode: 'group',
+				//	paper_bgcolor: '#333',
+				};
 
-				Plotly.newPlot('plotlyChart', data, layout);
+				var config = { responsive: true };
+
+				Plotly.newPlot('plotlyChart', data, layout, config);
 			},
 			failure: function (result) {
 				alert(result.d);
@@ -615,5 +683,8 @@
 				alert(result.d);
 			}
 		});
+		window.onload = () => {
+			document.getElementById('plotBody').style.height = "700px"; // after page loads, increase container width
+		}
 	</script>
 }
