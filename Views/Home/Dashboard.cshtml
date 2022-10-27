@@ -11,7 +11,7 @@
 	var defaultIconSrc = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
 }
 
-<div class="row fw-bolder mt-3 sticky-top blk-grad rounded">
+@*<div class="row fw-bolder mt-3 sticky-top blk-grad rounded">
 	<div class="col-2">
 		<a href="/" class="link-style">
 			<i class="bi bi-arrow-left"></i>
@@ -42,7 +42,7 @@
         </div>
     </div>
 </div>
-@*<a href="javascript:void(0);">
+*@@*<a href="javascript:void(0);">
 	@if (btUser?.AvatarFileData != null)
 	{
 		<img class="media-object" src="data:image/*;base64,@(Convert.ToBase64String(btUser.AvatarFileData))" alt="">
@@ -53,7 +53,7 @@
 	}
 </a>*@
 
-<div class="my-4">
+<div class="col-12 my-4">
 	<div class="mx-4">
 		<div class="row mb-3">
 			<div class="col-lg-3 col-md-6 col-sm-6 mt-4">
@@ -207,7 +207,7 @@
 		</div>
 	</div>
 	<hr />
-	<div class="my-5 mx-4">
+	<div class="col my-5 mx-4">
 		<div class="row">
 			@* Projects Table *@
 			<div class="col-12 col-lg-6 mb-3">

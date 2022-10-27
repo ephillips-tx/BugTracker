@@ -67,6 +67,8 @@ namespace BugTracker.Controllers
                 projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
             }
 
+            ViewData["CurrentPath"] = "All Projects List";
+
             return View(projects);
         }
 
@@ -122,6 +124,8 @@ namespace BugTracker.Controllers
 
             List<string> projectMembers = model.Project.Members.Select(m => m.Id).ToList();
             model.Users = new MultiSelectList(companyMembers, "Id", "FullName", projectMembers);
+
+            ViewData["Title"] = "Assign Members";
 
             return View(model);
         }

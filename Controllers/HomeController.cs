@@ -41,6 +41,8 @@ namespace BugTracker.Controllers
             model.Tickets = model.Projects.SelectMany(p => p.Tickets).Where(t=>t.Archived == false).ToList();
             model.Members = model.Company.Members.ToList();
 
+            ViewData["CurrentPath"] = "Dashboard";
+
             return View(model);
         }
 

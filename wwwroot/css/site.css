@@ -165,6 +165,13 @@ svg.main-svg {
     min-height: calc(var(--h) + 175px);
 }
 
+#project-members {
+    position: relative;
+}
+#project-members > * {
+    position:absolute;
+}
+
 .bg-lightblack {
     background-color: #333;
 }
