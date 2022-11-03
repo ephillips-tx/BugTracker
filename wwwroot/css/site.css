@@ -147,10 +147,6 @@ body {
     max-height: 200px;
 }
 
-#legend span {
-    margin: 0rem auto;
-}
-
 tspan {
     fill: #fff;
 }

@@ -8,50 +8,8 @@
 @{
 	ViewData["Title"] = "Dashboard";
 	BTUser btUser = await UserManager.GetUserAsync(User);
-	var defaultIconSrc = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
+	//var defaultIconSrc = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
 }
-
-@*<div class="row fw-bolder mt-3 sticky-top blk-grad rounded">
-	<div class="col-2">
-		<a href="/" class="link-style">
-			<i class="bi bi-arrow-left"></i>
-		</a>
-		<span>Dashboard</span>
-	</div>
-	<div class="col-10">
-        <div class="row py-2">
-            <div class="col-sm-3 col-md-5"></div>
-            <form method="post" class="col-sm-2 col-md-3">
-                <div class="input-group border-0">
-                    <input type="text" class="form-control" placeholder="Search here..." />
-                    <button type="submit" class="input-group-text border-0"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-            <div class="col-sm-7 col-md-4 d-flex justify-content-end align-items-center">
-                <a asp-controller="Tickets" asp-action="Create" class="btn btn-sm btn-primary mx-2">New Ticket</a>
-                <a href="/" class="text-decoration-none d-flex position-relative mx-4 px-2 link-style">
-                    <i class="bi bi-bell"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger x-sm">
-                        +99
-                        <span class="visually-hidden">unread notifications</span>
-                    </span>
-                </a>
-                <i class="bi bi-sliders mx-3"></i>
-                <i class="bi bi-box-arrow-left mx-3"></i>
-            </div>
-        </div>
-    </div>
-</div>
-*@@*<a href="javascript:void(0);">
-	@if (btUser?.AvatarFileData != null)
-	{
-		<img class="media-object" src="data:image/*;base64,@(Convert.ToBase64String(btUser.AvatarFileData))" alt="">
-	}
-	else
-	{
-		<img class="media-object" src="@defaultIconSrc" alt="" style="width:30px;height:30px">
-	}
-</a>*@
 
 <div class="col-12 my-4">
 	<div class="mx-4">
@@ -138,7 +96,7 @@
 					<div class="col-12 col-sm-6 col-md-4">
 						<div class="card p-2 dash-card">
 							<div class="card-header-chart position-relative rounded pt-3 mx-auto" id="chart2">
-								<div class="inner-header">
+								<div class="p-3">
 									<div id="donut"></div>
 								</div>
 							</div>
@@ -154,7 +112,7 @@
 								<div class="inner-header">
 									<!-- Morris: Donut -->
 									<div class="chart chart-md" id="morrisTicketPriority"></div>
-									<div id="legend" class="donut-legend" style="font-size:x-small"></div>
+									<div id="legend" class="donut-legend d-flex justify-content-center" style="font-size:x-small"></div>
 								</div>
 							</div>
 							<div class="card-body">

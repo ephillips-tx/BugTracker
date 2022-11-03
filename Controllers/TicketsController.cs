@@ -58,6 +58,8 @@ namespace BugTracker.Controllers
                 return View(tickets.Where(t => t.Archived == false));
             }
 
+            ViewData["CurrentPath"] = "All Tickets List";
+
             return View(tickets);
         }
 
@@ -432,5 +434,144 @@ namespace BugTracker.Controllers
             int companyId = User.Identity.GetCompanyId().Value;
             return (await _ticketService.GetAllTicketsByCompanyAsync(companyId)).Any(t => t.Id == id);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> GglTicketsByProject()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<object> chartData = new();
+            chartData.Add(new object[] { "Project", "Count" });
+
+            try
+            {
+                int ticketCount;
+
+                foreach (Project project in await _projectService.GetAllProjectsByCompanyAsync(companyId))
+                {
+                    ticketCount = project.Tickets.Count;
+                    chartData.Add(new object[] { project.Name, ticketCount });
+                    ticketCount = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Counting Tickets By Project");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            return Json(chartData);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GglOpenTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            List<object> chartData = new();
+            try
+            {
+                List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
+                int openTickets = (await _ticketService.GetAllTicketsByStatusAsync(companyId, nameof(BTTicketStatus.New))).Count;
+                int dblCount = tickets.Count;
+                
+                var tckFraction = (double)openTickets / (double)dblCount;
+                tckFraction = Math.Round(tckFraction, 2);
+                tckFraction *= 100;
+                var newString = tckFraction.ToString();
+                newString = newString.Substring(0, 2) + "%";
+
+                chartData.Add(new object[] { "", "OpenTicketCount" });
+                chartData.Add(new object[] { newString, openTickets });
+                chartData.Add(new object[] { String.Empty, (tickets.Count - openTickets) });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Counting Tickets By Status");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            return Json(chartData);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GglDevTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            List<object> chartData = new();
+            try
+            {
+                List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
+                int devTickets = (await _ticketService.GetAllTicketsByStatusAsync(companyId, nameof(BTTicketStatus.Development))).Count;
+                int dblCount = tickets.Count;
+
+                var tckFraction = (double)devTickets / (double)dblCount;
+                tckFraction = Math.Round(tckFraction, 2);
+                tckFraction *= 100;
+                var newString = tckFraction.ToString();
+                newString = newString.Substring(0, 2) + "%";
+
+                chartData.Add(new object[] { "", "DevelopmentTicketCount" });
+                chartData.Add(new object[] { newString, devTickets });
+                chartData.Add(new object[] { String.Empty, (tickets.Count - devTickets) });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Counting Tickets By Status");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            return Json(chartData);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GglResolvedTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            List<object> chartData = new();
+            try
+            {
+                List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
+                int resolvedTickets = (await _ticketService.GetAllTicketsByStatusAsync(companyId, nameof(BTTicketStatus.Resolved))).Count;
+                int dblCount = tickets.Count;
+                double tckFraction;
+                if(resolvedTickets != 0)
+                {
+                    tckFraction = (double)resolvedTickets / (double)dblCount;
+                    tckFraction = Math.Round(tckFraction, 2);
+                    tckFraction *= 100;
+                }
+                else
+                {
+                    tckFraction = 0;
+                }
+                
+                string newString = tckFraction.ToString();
+                newString = (newString.Length < 2) ? newString + "%" : newString.Substring(0, 2) + "%";
+
+                chartData.Add(new object[] { "", "ResolvedTicketCount" });
+                chartData.Add(new object[] { newString, resolvedTickets });
+                chartData.Add(new object[] { String.Empty, (tickets.Count - resolvedTickets) });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Counting Tickets By Status");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            return Json(chartData);
+        }
     }
+    
 }
