@@ -179,3 +179,7 @@ svg.main-svg {
 .text-maroon {
     color: maroon;
 }
+
+progress {
+    accent-color: maroon;
+}

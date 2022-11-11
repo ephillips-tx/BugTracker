@@ -11,13 +11,6 @@
     BTUser btUser = await UserManager.GetUserAsync(User);
 }
 
-@*@if(User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
-{
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-}*@
-
 <div class="col-12">
     <table class="table align-middle">
         <thead class="text-pink">
@@ -28,7 +21,7 @@
                 <th>Project Manager</th>
                 <th>Team</th>
                 <th>Status</th>
-                <th></th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -44,8 +37,33 @@
                         </div>
                     </td>
                     <td><span style="font-size:small;color: #f8f9fa">@project.EndDate.ToString("dd MMMM, yyyy")</span></td>
+                    @{
+                        int numDays = (project.StartDate - project.EndDate).Days;
+                        int progressValue = 0;
+                        if(project.EndDate < DateTime.Now)
+                        {
+                            progressValue = 100;
+                        }
+                        else if(project.StartDate > DateTime.Now)
+                        {
+                            progressValue = 0;
+                        }
+                        else
+                        {
+                            int daysRemaining = (project.EndDate - DateTime.Now).Days;
+                            double fracOfDaysLeft = (double)daysRemaining / (double)numDays;
+
+                            if(fracOfDaysLeft < 0)
+                            {
+                                fracOfDaysLeft *= -1.0;
+                            }
+                            fracOfDaysLeft *= 100.0;
+
+                            progressValue = 100 - (int)Math.Round(fracOfDaysLeft, 0, MidpointRounding.AwayFromZero);
+                        }
+                    }
                     <td>
-                        progress bar
+                        <progress max="100" value="@progressValue"></progress>
                     </td>
                     <td>
                         @{
@@ -108,7 +126,7 @@
                         @if (User.IsInRole(nameof(Roles.Admin)) || isProjectPM)
                         {
                             <a asp-action="Edit" asp-route-id="@project.Id"><i class="fs-5 bi-pencil"></i></a>
-
+                            <span> | </span>
                             @if (project.Archived)
                             {
                                 <a asp-action="Restore" asp-route-id="@project.Id"><i class="fs-5 bi-arrow-clockwise"></i></a>

@@ -45,6 +45,8 @@ namespace BugTracker.Controllers
             BTUser btUser = await _userManager.GetUserAsync(User);
             List<Ticket> tickets = await _ticketService.GetTicketsByUserIdAsync(btUser.Id, btUser.CompanyId);
 
+            ViewData["CurrentPath"] = "My Tickets List";
+
             return View(tickets);
         }
 
@@ -53,12 +55,12 @@ namespace BugTracker.Controllers
             int companyId = User.Identity.GetCompanyId().Value;
             List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
 
-            if(User.IsInRole(nameof(Roles.Developer)) || User.IsInRole(nameof(Roles.Submitter)))
+            ViewData["CurrentPath"] = "All Tickets List";
+
+            if (User.IsInRole(nameof(Roles.Developer)) || User.IsInRole(nameof(Roles.Submitter)))
             {
                 return View(tickets.Where(t => t.Archived == false));
             }
-
-            ViewData["CurrentPath"] = "All Tickets List";
 
             return View(tickets);
         }
@@ -76,6 +78,8 @@ namespace BugTracker.Controllers
         {
             int companyId = User.Identity.GetCompanyId().Value;
             string btUserId = _userManager.GetUserId(User);
+
+            ViewData["CurrentPath"] = "Unassigned Tickets List";
 
             List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
 
@@ -478,7 +482,7 @@ namespace BugTracker.Controllers
                 int dblCount = tickets.Count;
                 
                 var tckFraction = (double)openTickets / (double)dblCount;
-                tckFraction = Math.Round(tckFraction, 2);
+                tckFraction = Math.Round(tckFraction, 2, MidpointRounding.AwayFromZero);
                 tckFraction *= 100;
                 var newString = tckFraction.ToString();
                 newString = newString.Substring(0, 2) + "%";
@@ -511,7 +515,7 @@ namespace BugTracker.Controllers
                 int dblCount = tickets.Count;
 
                 var tckFraction = (double)devTickets / (double)dblCount;
-                tckFraction = Math.Round(tckFraction, 2);
+                tckFraction = Math.Round(tckFraction, 2, MidpointRounding.AwayFromZero);
                 tckFraction *= 100;
                 var newString = tckFraction.ToString();
                 newString = newString.Substring(0, 2) + "%";
@@ -546,7 +550,7 @@ namespace BugTracker.Controllers
                 if(resolvedTickets != 0)
                 {
                     tckFraction = (double)resolvedTickets / (double)dblCount;
-                    tckFraction = Math.Round(tckFraction, 2);
+                    tckFraction = Math.Round(tckFraction, 2, MidpointRounding.AwayFromZero);
                     tckFraction *= 100;
                 }
                 else
@@ -560,6 +564,107 @@ namespace BugTracker.Controllers
                 chartData.Add(new object[] { "", "ResolvedTicketCount" });
                 chartData.Add(new object[] { newString, resolvedTickets });
                 chartData.Add(new object[] { String.Empty, (tickets.Count - resolvedTickets) });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Counting Tickets By Status");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            return Json(chartData);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GglUserTicketsByProject()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            BTUser btUser = await _userManager.GetUserAsync(User);
+
+            List<object> chartData = new();
+            chartData.Add(new object[] { "Project", "Count" });
+
+            try
+            {
+                int ticketCount = 0;
+
+                foreach (Project project in await _projectService.GetAllProjectsByCompanyAsync(companyId))
+                {
+                    foreach(Ticket ticket in project.Tickets)
+                    {
+                        if(ticket.DeveloperUserId == btUser.Id)
+                        {
+                            ticketCount++;
+                        }
+                        else if (ticket.OwnerUserId == btUser.Id)
+                        {
+                            ticketCount++;
+                        }
+                        else if (await _projectService.IsAssignedProjectManagerAsync(btUser.Id,project.Id))
+                        {
+                            ticketCount++;
+                        }
+                        else
+                        {
+                        }
+                    }
+                    chartData.Add(new object[] { project.Name, ticketCount });
+                    ticketCount = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Counting Tickets By Project");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            return Json(chartData);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GglUserOpenTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            BTUser btUser = await _userManager.GetUserAsync(User);
+
+            List<object> chartData = new();
+            try
+            {
+                int openTickets = 0;
+
+                List<Ticket> userTickets = await _ticketService.GetTicketsByUserIdAsync(btUser.Id, companyId);
+                foreach(Ticket ticket in userTickets)
+                {
+                    if(ticket.TicketStatus.Name == nameof(BTTicketStatus.New))
+                    {
+                        openTickets++;
+                    }
+                }
+                int dblCount = userTickets.Count;
+
+                double tckFraction;
+                if (openTickets != 0)
+                {
+                    tckFraction = (double)openTickets / (double)dblCount;
+                    tckFraction = Math.Round(tckFraction, 2, MidpointRounding.AwayFromZero);
+                    tckFraction *= 100;
+                }
+                else
+                {
+                    tckFraction = 0;
+                }
+
+                var newString = tckFraction.ToString();
+                newString = (newString.Length < 2) ? newString + "%" : newString.Substring(0, 2) + "%";
+
+                chartData.Add(new object[] { "", "OpenTicketCount" });
+                chartData.Add(new object[] { newString, openTickets });
+                chartData.Add(new object[] { String.Empty, (userTickets.Count - openTickets) });
             }
             catch (Exception ex)
             {
