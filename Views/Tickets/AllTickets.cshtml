@@ -11,26 +11,6 @@
     BTUser btUser = await userManager.GetUserAsync(User);
 }
 
-<style>
-    #chart1, #donut1, #donut2, #donut3 {
-        background-image: none;
-    }
-
-    #donut1 > div > div:nth-child(1) > div > svg > g:nth-child(4) > text,
-    #donut2 > div > div:nth-child(1) > div > svg > g:nth-child(3) > text,
-    #donut3 > div > div:nth-child(1) > div > svg > g:nth-child(3) > text {
-        fill: transparent;
-    }
-
-    #donutLabel1, #donutLabel2, #donutLabel3 {
-        position: absolute;
-        top: 37%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        font-size: 3rem;
-    }
-</style>
-
 <div class="col-12">
     <div class="row mb-3">
         <div class="col-lg-3 col-md-6 col-sm-6 mt-4">
@@ -156,8 +136,8 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-light"><i class="fs-5 bi-justify"></i></a> |
-
+                        <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-light"><i class="fs-5 bi-justify"></i></a>
+                        <span class="vr"></span>
                         @{
                             bool isDev = ticket.DeveloperUserId == btUser.Id;
                             bool isOwner = ticket.OwnerUserId == btUser.Id;
@@ -166,7 +146,7 @@
                         @if (User.IsInRole(nameof(Roles.Admin)) || isDev || isOwner)
                         {
                             <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-info"><i class="fs-5 bi-pencil"></i></a>
-                            <span> | </span>
+                            <span class="vr"></span>
 
                             @if (ticket.Archived)
                             {
@@ -260,7 +240,8 @@
                     };
                     var chart = new google.visualization.PieChart($("#donut1")[0]);
                     chart.draw(data, options);
-                    addDonutChartLabel("#donut1", chColor)
+                    var labelData = data.Wf[0].c[0].v
+                    addDonutChartLabel("#donut1", chColor, labelData)
                 },
                 failure: function (rresult) {
                     alert(result.d);
@@ -298,7 +279,8 @@
                     };
                     var chart = new google.visualization.PieChart($("#donut2")[0]);
                     chart.draw(data, options);
-                    addDonutChartLabel("#donut2", chColor)
+                    var labelData = data.Wf[0].c[0].v
+                    addDonutChartLabel("#donut2", chColor, labelData)
                 },
                 failure: function (rresult) {
                     alert(result.d);
@@ -336,7 +318,8 @@
                     };
                     var chart = new google.visualization.PieChart($("#donut3")[0]);
                     chart.draw(data, options);
-                    addDonutChartLabel("#donut3", chColor)
+                    var labelData = data.Wf[0].c[0].v
+                    addDonutChartLabel("#donut3", chColor, labelData)
                 },
                 failure: function (rresult) {
                     alert(result.d);
@@ -345,37 +328,6 @@
                     alert(result.d);
                 }
             });
-        }
-    </script>
-
-    <script>
-        var chartCount = 1;
-        function addDonutChartLabel(chartId, donutColor){
-            var gNum = 4;
-            if (chartId == "#donut2" || chartId == "#donut3") gNum = 3
-            var selection = chartId + " > div > div:nth-child(1) > div > svg > g:nth-child("+gNum+") > text"
-            var chartTextElement = document.querySelector(selection)
-            if(chartTextElement == null) {
-                var selection0 = selection.substring(0, selection.length - 7)
-                var thisEl = document.querySelector(selection0)
-                var newTextEl = document.createElement("text")
-                newTextEl.textContent = "0%"
-                thisEl.appendChild(newTextEl)
-                chartTextElement = document.querySelector(selection)
-            }
-            var donutChart = document.getElementById(chartId.substring(1))
-            var newId = "donutLabel"+chartCount 
-            donutChart.appendChild(createLabel(newId, donutColor, chartTextElement.textContent))
-            chartCount++;
-            //console.log(chartCount);
-        }
-        function createLabel(id, color, text){
-            var newElement = document.createElement("span")
-            newElement.id = id
-            newElement.style.color = color
-            newElement.textContent = text
-
-            return newElement;
         }
     </script>
 }

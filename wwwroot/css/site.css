@@ -130,6 +130,24 @@ body {
     /*background-color: maroon;*/
 }
 
+#donut1, #donut2, #donut3 {
+    background-image: none;
+}
+
+    #donut1 > div > div:nth-child(1) > div > svg > g:nth-child(4) > text,
+    #donut2 > div > div:nth-child(1) > div > svg > g:nth-child(3) > text,
+    #donut3 > div > div:nth-child(1) > div > svg > g:nth-child(3) > text {
+        fill: transparent;
+    }
+
+.donutChartLabel {
+    position: absolute;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 3rem;
+}
+
 /* Morris chart color */
 .chart-md > svg, .donut-legend {
     background-color: rgba(255,255,255,0);

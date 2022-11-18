@@ -47,6 +47,11 @@ namespace BugTracker.Controllers
 
             ViewData["CurrentPath"] = "My Tickets List";
 
+            if (User.IsInRole(nameof(Roles.Developer)) || User.IsInRole(nameof(Roles.Submitter)))
+            {
+                return View(tickets.Where(t => t.Archived == false));
+            }
+
             return View(tickets);
         }
 
@@ -79,7 +84,7 @@ namespace BugTracker.Controllers
             int companyId = User.Identity.GetCompanyId().Value;
             string btUserId = _userManager.GetUserId(User);
 
-            ViewData["CurrentPath"] = "Unassigned Tickets List";
+            ViewData["CurrentPath"] = "Assign Tickets";
 
             List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
 
@@ -544,7 +549,7 @@ namespace BugTracker.Controllers
             try
             {
                 List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
-                int resolvedTickets = (await _ticketService.GetAllTicketsByStatusAsync(companyId, nameof(BTTicketStatus.Resolved))).Count;
+                int resolvedTickets = (await _ticketService.GetAllTicketsByStatusAsync(companyId, nameof(BTTicketStatus.Resolved))).Where(t => t.Archived == false).Count();
                 int dblCount = tickets.Count;
                 double tckFraction;
                 if(resolvedTickets != 0)
@@ -563,7 +568,7 @@ namespace BugTracker.Controllers
 
                 chartData.Add(new object[] { "", "ResolvedTicketCount" });
                 chartData.Add(new object[] { newString, resolvedTickets });
-                chartData.Add(new object[] { String.Empty, (tickets.Count - resolvedTickets) });
+                chartData.Add(new object[] { String.Empty, tickets.Count - resolvedTickets });
             }
             catch (Exception ex)
             {

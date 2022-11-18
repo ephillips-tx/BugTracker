@@ -1,68 +1,133 @@
 ﻿@model IEnumerable<BugTracker.Models.Ticket>
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Services.Interfaces
 @using BugTracker.Models.Enums
 
-@{ViewData["Title"] = "Unassigned Tickets";}
+@inject UserManager<BTUser> userManager
+@inject IBTProjectService projectService
 
-<div class="row">
-    <div class="col-md-12 col">
-        <div class="mt-5 bg-secondary">
-            <div class="card m-1 p-2">
-                <div class="header">
-                    <h2>Unassigned Tickets</h2>
-                </div>
-                <div class="body">
-                    <div class="table-responsive" style="overflow-y:auto;height:600px;">
-                        <table class="table table-hover">
-                            <thead class="">
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Developer</th>
-                                    <th>Status</th>
-                                    <th>Priority</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var ticket in Model.OrderByDescending(d => d.Created))
-                                {
-                                    <tr>
-                                        <td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" style="color:black"><strong>@ticket.Title</strong></a> </td>
-                                        <td>
-                                            @if (ticket.DeveloperUserId != null)
-                                            {
-                                                @ticket.DeveloperUser?.FullName
-                                            }
-                                            else
-                                            {
-                                                if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
-                                                {
-                                                    <a class="btn btn-xs btn-info" asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id">Assign Dev</a>
-                                                }
+@{
+    ViewData["Title"] = "Assign Tickets";
+    BTUser btUser = await userManager.GetUserAsync(User);
+    List<Project> projects = await projectService.GetAllProjectsByCompanyAsync(btUser.CompanyId);
+}
 
-                                            }
-                                        </td>
-                                        @if (ticket.TicketStatus.Name == "New")
+<div class="col-12 my-4">
+    <h2 class="my-1">Ticket List</h2>
+    <table class="table table-hover align-middle">
+        <thead class="text-pink">
+            <tr>
+                <th>Owner</th>
+                <th>Assigned To</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Date Created</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var project in projects)
+            {
+                <tr class="fw-bolder">
+                    <td colspan="7" class="bg-dark fst-italic text-pink">Project: <span class="fst-normal small text-light">@project.Name</span></td>
+                    @foreach (var ticket in Model.OrderByDescending(d => d.Created))
+                    {
+                        if (ticket.ProjectId == project.Id)
+                        {
+                            <tr class="text-light">
+                                <td>
+                                    @if (ticket.OwnerUser != null)
+                                    {
+                                        <span>@ticket.OwnerUser.FullName</span>
+                                    }
+                                    else
+                                    {
+                                    }
+                                </td>
+                                <td>
+                                    @if (ticket.DeveloperUserId != null)
+                                    {
+                                        <a asp-controller="" asp-action="" class="btn btn-xs btn-outline-warning">@ticket.DeveloperUser?.FullName</a>
+                                    }
+                                    else
+                                    {
+                                        if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
                                         {
-                                            <td><span class="badge-success">@ticket.TicketStatus.Name </span></td>
+                                            <a class="btn btn-xs btn-outline-info" asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id">Assign Dev</a>
+                                        }
+
+                                    }
+                                </td>
+                                <td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-light"><strong>@ticket.Title</strong></a></td>
+                                <td>
+                                    @if (ticket.TicketStatus.Name == "New")
+                                    {
+                                        <span class="btn btn-small btn-outline-success">@ticket.TicketStatus.Name</span>
+                                    }
+                                    else if (ticket.TicketStatus.Name == "Development")
+                                    {
+                                        <span class="btn btn-small btn-outline-primary">@ticket.TicketStatus.Name </span>
+                                    }
+                                    else if (ticket.TicketStatus.Name == "Testing")
+                                    {
+                                        <span class="btn btn-small btn-outline-warning">@ticket.TicketStatus.Name </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="btn btn-small btn-outline-secondary">@ticket.TicketStatus.Name </span>
+                                    }
+                                </td>
+                                @{
+                                    string badgeColor = "btn-outline-info";
+                                    switch (ticket.TicketPriority.Name)
+                                    {
+                                        case "Urgent":
+                                            badgeColor = "btn-outline-danger";
+                                            break;
+                                        case "High":
+                                            badgeColor = "btn-outline-warning";
+                                            break;
+                                        case "Medium":
+                                            badgeColor = "btn-outline-primary";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                <td>
+                                    <span class="btn btn-sm @badgeColor">@ticket.TicketPriority.Name </span>
+                                </td>
+                                <td class="small fst-italic">@ticket.Created.ToString("MM-dd-yyyy")</td>
+                                <td>
+                                    <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-light"><i class="fs-5 bi-justify"></i></a>
+                                    <span class="vr"></span>
+
+                                    @{
+                                        bool isDev = ticket.DeveloperUserId == btUser.Id;
+                                        bool isOwner = ticket.OwnerUserId == btUser.Id;
+                                    }
+                                    @if (User.IsInRole(nameof(Roles.Admin)) || isDev || isOwner)
+                                    {
+                                        <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-info"><i class="fs-5 bi-pencil"></i></a>
+                                        <span class="vr"></span>
+                                        @if (ticket.Archived)
+                                        {
+                                            <a asp-action="Restore" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-success"><i class="fs-5 bi-arrow-clockwise"></i></a>
                                         }
                                         else
                                         {
-                                            <td><span class="badge-primary">@ticket.TicketStatus.Name </span></td>
+                                            <a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-decoration-none text-danger"><i class="fs-5 bi-archive"></i></a>
                                         }
-                                        <td><span class="badge-warning">@ticket.TicketPriority.Name </span></td>
-                                        <td>@ticket.Created.ToString("MM-dd-yyyy")</td>
-                                        <td>
-                                            <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id"><i class="fs-5 bi-justify"></i></a>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
+
+
