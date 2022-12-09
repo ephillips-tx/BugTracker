@@ -75,6 +75,7 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> ArchivedProjects()
         {
             int companyId = User.Identity.GetCompanyId().Value;
+            ViewData["CurrentPath"] = "Projects / Projects Archive";
 
             List<Project> projects = await _projectService.GetArchivedProjectsByCompanyAsync(companyId);
 
@@ -83,14 +84,24 @@ namespace BugTracker.Controllers
 
         [Authorize(Roles="Admin")]
         [HttpGet]
-        public async Task<IActionResult> AssignPM(int projectId)
+        public async Task<IActionResult> AssignPM(int id)
         {
             int companyId = User.Identity.GetCompanyId().Value;
 
             AssignPMViewModel model = new();
-
-            model.Project = await _projectService.GetProjectByIdAsync(projectId, companyId);
-            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), companyId), "Id", "FullName");
+            try
+            {
+                model.Project = await _projectService.GetProjectByIdAsync(id, companyId);
+                model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), companyId), "Id", "FullName");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Getting Info to Assign Project Manager");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
 
             return View(model);
         }
@@ -102,11 +113,21 @@ namespace BugTracker.Controllers
         {
             if (!string.IsNullOrEmpty(model.PMID))
             {
-                await _projectService.AddProjectManagerAsync(model.PMID, model.Project.Id);
-
+                try
+                {
+                    await _projectService.AddProjectManagerAsync(model.PMID, model.Project.Id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("*************  ERROR  *************");
+                    Console.WriteLine("Error Assigning Project Manager");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("***********************************");
+                    throw;
+                }
                 return RedirectToAction(nameof(Details), new { id = model.Project.Id });
             }
-            return RedirectToAction(nameof(AssignPM), new { projectId = model.Project.Id });
+            return RedirectToAction(nameof(AssignPM), new { id = model.Project.Id });
         }
 
         [Authorize(Roles="Admin,ProjectManager")]
@@ -159,7 +180,9 @@ namespace BugTracker.Controllers
         [Authorize(Roles="Admin")]
         public async Task<IActionResult> UnassignedProjects()
         {
+            // AKA Assign Projects
             int companyId = User.Identity.GetCompanyId().Value;
+            ViewData["CurrentPath"] = "Assign Projects";
             List<Project> projects = new();
 
             projects = await _projectService.GetUnassignedProjectsAsync(companyId);

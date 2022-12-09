@@ -1,0 +1,52 @@
+﻿@model IEnumerable<BugTracker.Models.BTUser>
+@using BugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Services.Interfaces
+
+@inject UserManager<BTUser> UserManager;
+@inject IBTRolesService RolesService
+
+@{
+    ViewData["Title"] = "All Projects";
+    BTUser btUser = await UserManager.GetUserAsync(User);
+}
+
+<div class="col-12 my-4">
+    <table class="table table-hover align-middle">
+        <thead class="text-pink">
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Join Date</th>
+                <th>Role</th>
+                <th>Profile</th>
+            </tr>
+        </thead>
+        <tbody class="text-light">
+            @foreach (var member in Model)
+            {
+                <tr>
+                    @if (member.AvatarFileData != null)
+                    {
+                        <td><img src="data:image/*;base64,@(Convert.ToBase64String(member.AvatarFileData))" class="rounded-circle" style="width:30px;height:30px;" /></td>
+                    }
+                    else
+                    {
+                        <td><img src="~/img/defaultUserImage.png" class="rounded-circle" style="width:30px;height:30px;" /></td>
+                    }
+                    <td><span class="fw-bold">@member.FullName</span></td>
+                    <td>@member.Email</td>
+                    <td>@member.PhoneNumber</td>
+                    <td>18 May, 2021</td>
+                    @{
+                        string roleName = (await RolesService.GetUserRolesAsync(member)).FirstOrDefault();
+                    }
+                    <td>@roleName</td>
+                    <td><a asp-action="MemberProfile" asp-controller="Home" asp-route-id="@member.Id" class="text-decoration-none text-light"><i class="fs-5 bi-justify"></i></a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

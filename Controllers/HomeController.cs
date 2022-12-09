@@ -5,6 +5,7 @@ using BugTracker.Models.Enums;
 using BugTracker.Models.ViewModels;
 using BugTracker.Services;
 using BugTracker.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -15,14 +16,17 @@ namespace BugTracker.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IBTCompanyInfoService _companyInfoService;
         private readonly IBTProjectService _projectService;
+        private readonly UserManager<BTUser> _userManager;
 
         public HomeController(ILogger<HomeController> logger,
                                       IBTCompanyInfoService companyInfoService,
-                                      IBTProjectService projectService)
+                                      IBTProjectService projectService,
+                                      UserManager<BTUser> userManager)
         {
             _logger = logger;
             _companyInfoService = companyInfoService;
             _projectService = projectService;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -44,6 +48,27 @@ namespace BugTracker.Controllers
             ViewData["CurrentPath"] = "Dashboard";
 
             return View(model);
+        }
+
+        public async Task<IActionResult> AllUsers()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            ViewData["CurrentPath"] = "Employee / Members";
+            List<BTUser> companyMembers = await _companyInfoService.GetAllMembersAsync(companyId);
+
+            return View(companyMembers);
+        }
+
+        public async Task<IActionResult> MemberProfile(string id)
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            BTUser user = await _userManager.FindByIdAsync(id);
+            user.Company = await _companyInfoService.GetCompanyInfoByIdAsync(user.CompanyId);
+            user.Projects = await _projectService.GetUserProjectsAsync(id);
+
+            ViewData["CurrentPath"] = "Member Profile";
+
+            return View(user);
         }
 
         public IActionResult Privacy()

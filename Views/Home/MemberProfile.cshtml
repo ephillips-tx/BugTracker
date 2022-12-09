@@ -1,0 +1,92 @@
+﻿@model BugTracker.Models.BTUser
+@using BugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Services.Interfaces
+
+@inject UserManager<BTUser> UserManager;
+@inject IBTProjectService ProjectService;
+@inject IBTRolesService RolesService
+
+@{
+    BTUser btUser = await UserManager.GetUserAsync(User);
+    ViewData["Title"] = btUser.FullName.ToString() + " - Member Profile";
+    string roleName = (await RolesService.GetUserRolesAsync(btUser)).FirstOrDefault();
+}
+
+<div class="col-md-4 mb-4">
+    <div class="card dash-card p-4">
+        @if (Model.AvatarFileData != null)
+        {
+            <img src="data:image/*;base64,@(Convert.ToBase64String(Model.AvatarFileData))" class="img-thumbnail" style="max-width: 200px;" />
+        }
+        else
+        {
+            <img src="~/img/defaultUserImage.png" class="img-thumbnail" style="max-width: 200px;" />
+        }
+        <h4>@Model.FullName</h4>
+        <span class="badge bg-warning w-25">@roleName</span>
+        <div><span class="fw-bold">Company:</span> @Model.Company.Name</div>
+        <button type="button" class="btn btn-sm btn-success my-3 w-25 x-sm"><i class="bi-envelope"></i>&nbsp;<span class="">Message</span></button>
+    </div>
+</div>
+<div class="col-md-8 mb-4"></div>
+@foreach (Project project in Model.Projects)
+{
+    <div class="col-md-4 mb-5">
+        <div class="card dash-card p-4">
+            <div class="fw-bold mb-2">
+                <div class="text-pink">Project: @project.Name</div>
+                <span style="font-size:small;color: #f8f9fa">@project.StartDate.ToString("MM.dd.yyyy")</span>
+            </div>
+            <div class="mb-2">
+                <div class="fw-bold text-warning">Description</div>
+                <p class="x-sm">@project.Description</p>
+            </div>
+            <div>
+                <span class="x-sm text-secondary fw-bold">Team</span>
+                <div id="project-members" style="height:30px">
+                    @{
+                        int posAdj = 0;
+                        var lPos = "";
+                    }
+                    @foreach (var member in project.Members)
+                    {
+                        lPos = posAdj.ToString() + "px";
+                        if (member.AvatarFileData != null)
+                        {
+                            <img src="data:image/*;base64,@(Convert.ToBase64String(member.AvatarFileData))" class="rounded-circle transparency-light" style="width:30px;height:30px;left:@lPos" />
+                        }
+                        else
+                        {
+                            <img src="~/img/defaultUserImage.png" class="rounded-circle transparency-light" style="width:30px;height:30px;left:@lPos" />
+                        }
+                        posAdj += 25;
+                    }
+                </div>
+            </div>
+            <div class="progress-container progress-info m-b-25">
+                <span class="progress-badge" style="font-size:small">Project Status</span>
+                <div class="progress">
+                    @{
+                        var start = project.StartDate;
+                        var end = project.EndDate;
+                        var today = DateTime.Now;
+                        var percent = today >= end ? 100 : today < start ? 0 : Math.Round((today.Subtract(start)) / (end.Subtract(start)) * 100);
+                    }
+                    <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: @percent%;">
+                        <span class="progress-value">@percent%</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div>Tickets Submitted: @project.Tickets.Where(t => t.OwnerUserId == Model.Id).Count()</div>
+                <div>Tickets in Development: @project.Tickets.Where(t => t.TicketStatus.Name == nameof(BTTicketStatus.Development)).Count()</div>
+            </div>
+        </div>
+
+    </div>
+}
+
+<div class="mt-4 mb-5">
+    <a asp-action="AllUsers" asp-controller="Home" class="">Back to Member's list</a>
+</div>

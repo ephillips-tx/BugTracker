@@ -48,7 +48,7 @@
                                 <td>
                                     @if (ticket.DeveloperUserId != null)
                                     {
-                                        <a asp-controller="" asp-action="" class="btn btn-xs btn-outline-warning">@ticket.DeveloperUser?.FullName</a>
+                                        <a asp-controller="Tickets" asp-action="AssignDeveloper" asp-route-id="@ticket.Id" class="btn btn-xs btn-outline-warning">@ticket.DeveloperUser?.FullName</a>
                                     }
                                     else
                                     {
@@ -61,15 +61,15 @@
                                 </td>
                                 <td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-light"><strong>@ticket.Title</strong></a></td>
                                 <td>
-                                    @if (ticket.TicketStatus.Name == "New")
+                                    @if (ticket.TicketStatus.Name == nameof(BTTicketStatus.New))
                                     {
                                         <span class="btn btn-small btn-outline-success">@ticket.TicketStatus.Name</span>
                                     }
-                                    else if (ticket.TicketStatus.Name == "Development")
+                                    else if (ticket.TicketStatus.Name == nameof(BTTicketStatus.Development))
                                     {
                                         <span class="btn btn-small btn-outline-primary">@ticket.TicketStatus.Name </span>
                                     }
-                                    else if (ticket.TicketStatus.Name == "Testing")
+                                    else if (ticket.TicketStatus.Name == nameof(BTTicketStatus.Testing))
                                     {
                                         <span class="btn btn-small btn-outline-warning">@ticket.TicketStatus.Name </span>
                                     }

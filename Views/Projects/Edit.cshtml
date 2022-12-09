@@ -2,6 +2,7 @@
 @using BugTracker.Models.Enums
 @{
     ViewData["Title"] = "Edit Project";
+    string projectAction = (!User.IsInRole(nameof(Roles.Admin))) ? "MyProjects" : "AllProjects";
 }
 
 <h1>Edit</h1>
@@ -80,7 +81,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="@projectAction" asp-controller="Projects">Back to List</a>
 </div>
 
 @section Scripts {

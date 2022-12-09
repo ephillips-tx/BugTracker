@@ -113,6 +113,8 @@ namespace BugTracker.Controllers
         {
             AssignDeveloperViewModel model = new();
 
+            ViewData["CurrentPath"] = "Assign Tickets / Assign Developer";
+
             model.Ticket = await _ticketService.GetTicketByIdAsync(id);
             model.Developers = new SelectList(await _projectService.GetProjectMembersByRoleAsync(model.Ticket.ProjectId,nameof(Roles.Developer)),
                                                                                                 "Id","FullName");
@@ -170,6 +172,7 @@ namespace BugTracker.Controllers
         {
             BTUser btUser = await _userManager.GetUserAsync(User);
             int companyId = User.Identity.GetCompanyId().Value;
+            ViewData["CurrentPath"] = "Tickets / Create";
 
             if (User.IsInRole(nameof(Roles.Admin)))
             {

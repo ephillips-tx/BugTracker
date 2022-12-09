@@ -12,7 +12,7 @@
 }
 
 <div class="col-12">
-    <table class="table align-middle">
+    <table class="table table-hover align-middle">
         <thead class="text-pink">
             <tr>
                 <th>Project</th>
@@ -93,17 +93,17 @@
                                 lPos = posAdj.ToString() + "px";
                                 if(member.AvatarFileData != null)
                                 {
-                                    <img src="data:image/*;base64,@(Convert.ToBase64String(member.AvatarFileData))" class="rounded-circle" style="width:30px;height:30px;left:@lPos" />
+                                    <img src="data:image/*;base64,@(Convert.ToBase64String(member.AvatarFileData))" class="rounded-circle transparency-light" style="width:30px;height:30px;left:@lPos" />
                                 }
                                 else
                                 {
-                                    <img src="~/img/defaultUserImage.png" class="rounded-circle" style="width:30px;height:30px;left:@lPos" />
+                                    <img src="~/img/defaultUserImage.png" class="rounded-circle transparency-light" style="width:30px;height:30px;left:@lPos" />
                                 }
                                 posAdj += 25;
                             }
                         </div>
                         <div>
-                            <a asp-action="AssignMembers" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-sm btn-outline-info p-0">Manage Team</a>
+                            <a asp-action="AssignMembers" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-sm btn-outline-info mt-1 p-0">Manage Team</a>
                         </div>
                     </td>
                     <td>
@@ -117,23 +117,20 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id"><i class="fs-5 bi-justify"></i></a> |
-
-                        @{
-                            bool isProjectPM = projectManager?.Id == btUser.Id;
-                        }
-
+                        <a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-light"><i class="fs-5 bi-justify"></i></a>
+                        <span class="vr text-light"></span>
+                        @{ bool isProjectPM = projectManager?.Id == btUser.Id; }
                         @if (User.IsInRole(nameof(Roles.Admin)) || isProjectPM)
                         {
-                            <a asp-action="Edit" asp-route-id="@project.Id"><i class="fs-5 bi-pencil"></i></a>
-                            <span> | </span>
+                            <a asp-action="Edit" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-info"><i class="fs-5 bi-pencil"></i></a>
+                            <span class="vr text-light"></span>
                             @if (project.Archived)
                             {
-                                <a asp-action="Restore" asp-route-id="@project.Id"><i class="fs-5 bi-arrow-clockwise"></i></a>
+                                <a asp-action="Restore" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-success"><i class="fs-5 bi-arrow-clockwise"></i></a>
                             }
                             else
                             {
-                                <a asp-action="Archive" asp-route-id="@project.Id"><i class="fs-5 bi-archive"></i></a>
+                                <a asp-action="Archive" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-danger"><i class="fs-5 bi-archive"></i></a>
                             }
                         }
                     </td>

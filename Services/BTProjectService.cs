@@ -382,8 +382,9 @@ namespace BugTracker.Services
 
             return users.Where(u => u.CompanyId == companyId).ToList();
         }
-        #endregion 
+        #endregion
 
+        #region Is Assigned Project Manager
         public async Task<bool> IsAssignedProjectManagerAsync(string userId, int projectId)
         {
             try
@@ -402,7 +403,9 @@ namespace BugTracker.Services
                 throw;
             }
         }
+        #endregion
 
+        #region Is User on Project
         public async Task<bool> IsUserOnProjectAsync(string userId, int projectId)
         {
             Project project = await _context.Projects.Include(p => p.Members).FirstOrDefaultAsync(p => p.Id == projectId);
@@ -416,13 +419,17 @@ namespace BugTracker.Services
 
             return result;
         }
+        #endregion
 
+        #region Lookup Project Priority
         public async Task<int> LookupProjectPriorityId(string priorityName)
         {
             int priorityId = (await _context.ProjectPriorities.FirstOrDefaultAsync(p => p.Name == priorityName)).Id;
             return priorityId;
         }
+        #endregion
 
+        #region Remove Project Manager Async
         public async Task RemoveProjectManagerAsync(int projectId)
         {
             // go to Projects table (looking for users &> get members of the project)
@@ -446,7 +453,9 @@ namespace BugTracker.Services
                 throw;
             }
         }
+        #endregion
 
+        #region Remove User From Project
         public async Task RemoveUserFromProjectAsync(string userId, int projectId)
         {
             try
@@ -473,7 +482,9 @@ namespace BugTracker.Services
                 Console.WriteLine($"**** ERROR **** - Error removing user from project. ---> {ex.Message}");
             }
         }
+        #endregion
 
+        #region Remove Users From Project By Role
         public async Task RemoveUsersFromProjectByRoleAsync(string role, int projectId)
         {
             try
@@ -500,7 +511,9 @@ namespace BugTracker.Services
                 throw;
             }
         }
+        #endregion
 
+        #region Restore Project 
         public async Task RestoreProjectAsync(Project project)
         {
             try
@@ -522,11 +535,15 @@ namespace BugTracker.Services
             }
         }
 
+        #endregion
+
         // CRUD - EDIT
+        #region Update Project
         public async Task UpdateProjectAsync(Project project)
         {
             _context.Update(project);
             await _context.SaveChangesAsync();
         }
+        #endregion
     }
 }

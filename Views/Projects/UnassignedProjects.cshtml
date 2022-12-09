@@ -1,76 +1,87 @@
 ﻿@model IEnumerable<BugTracker.Models.Project>
+@using BugTracker.Models.Enums
 
 @{
-    ViewData["Title"] = "Unassigned Projects";
+    ViewData["Title"] = "Assign Projects";
 }
 
-<h1>Unassigned Projects</h1>
+<div class="col-12 my-4">
+    <table class="table table-hover align-middle">
+        <thead class="text-pink">
+            <tr>
+                <th>Project</th>
+                <th>Assign</th>
+                <th>Created</th>
+                <th>Image</th>                      
+                <th>Priority</th>
+                <th># of Members</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model)
+            {
+                <tr class="fw-bolder">
+                    <td>
+                        <a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" class="text-light"><strong>@project.Name</strong></a>
+                        <p class="x-sm text-secondary">@project.Description</p>
+                    </td>
+                    <td><a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-xs btn-outline-info">Assign PM</a></td>
+                    <td class="small fst-italic text-light">@project.StartDate.ToString("MM-dd-yyyy")</td>
+                    <td>
+                        @if (project.ImageFileData != null)
+                        {
+                            <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="data:image/*;base64,@(Convert.ToBase64String(project.ImageFileData))" />
+                        }
+                        else
+                        {
+                            <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="" />
+                        }
+                    </td>
+                    @{
+                        string badgeColor = "btn-outline-info";
+                        switch (project.ProjectPriority.Name)
+                        {
+                            case "Urgent":
+                                badgeColor = "btn-outline-danger";
+                                break;
+                            case "High":
+                                badgeColor = "btn-outline-warning";
+                                break;
+                            case "Medium":
+                                badgeColor = "btn-outline-primary";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    <td>
+                        <span class="btn btn-sm @badgeColor">@project.ProjectPriority.Name</span>
+                    </td>
+                    <td class="text-light">
+                        <span>@project.Members.Count()</span>
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-light"><i class="fs-5 bi-justify"></i></a>
+                        <span class="vr text-light"></span>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageFileData)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Archived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectPriority)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @if (item.ImageFileData != null)
-                {
-                    <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="data:image/*;base64,@(Convert.ToBase64String(item.ImageFileData))" />
-                }
-                else
-                {
-                    <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="" />
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Archived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
-            </td>
-            <td>
-                <a class="btn btn-sm btn-outline-secondary" asp-action="AssignPm" asp-route-projectId="@item.Id">Add PM</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                        @if (User.IsInRole(nameof(Roles.Admin)))
+                        {
+                            <a asp-action="Edit" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-info"><i class="fs-5 bi-pencil"></i></a>
+                            <span class="vr text-light"></span>
+                            @if (project.Archived)
+                            {
+                                <a asp-action="Restore" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-success"><i class="fs-5 bi-arrow-clockwise"></i></a>
+                            }
+                            else
+                            {
+                                <a asp-action="Archive" asp-controller="Projects" asp-route-id="@project.Id" class="text-decoration-none text-danger"><i class="fs-5 bi-archive"></i></a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

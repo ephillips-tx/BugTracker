@@ -4,35 +4,90 @@
     ViewData["Title"] = "Assign Developer";
 }
 
-<div class="container">
-    <h2>Assign Developer for</h2>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>@Model.Ticket.Title</h3>
-            <a style="font-size:small" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Ticket.ProjectId">@Model.Ticket.Project.Name</a>
-            <div class="card">
-                <div class="card-header">
-                    <label class="control-label">Assign Developer</label>
-                </div>
-                <div class="card-body">
-                    <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
-                        <input asp-for="Ticket.Id" hidden />
-                        <p>Description: @Model.Ticket.Description</p>
-                        <div class="form-group">
-                            <label class="col-form-label">Select Developers</label>
-                            <select required asp-for="DeveloperId" class="form-control" asp-items="@Model.Developers">
-                                <option></option>
-                            </select>
-                        </div>
-                        <div class="form-group mt-3">
-                            <input type="submit" value="Assign" class="btn btn-primary" />
-                        </div>
-                    </form>
-                </div>
+<div class="col-6 my-3 text-dark">
+    <div class="card p-3 mb-3">
+        <p class="fw-bold">Select Developer</p>
+        <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
+            <input asp-for="Ticket.Id" hidden />
+            <div class="form-group">
+                <select required asp-for="DeveloperId" class="form-control" asp-items="@Model.Developers">
+                    <option>Select Developer</option>
+                </select>
+            </div>
+            <div class="form-group mt-3">
+                <input type="submit" value="Assign" class="btn btn-outline-warning" />
+                <a asp-action="MyTickets" asp-controller="Tickets" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+    <div class="card p-3">
+        <p class="fw-bolder">Current Developer</p>
+        @if(Model.Ticket.DeveloperUser != null)
+        {
+            <div class="text-center">
+                <img src="@Model.Ticket.DeveloperUser.AvatarFileData" class="rounded-circle" />
+                <h6 class="fw-bold">@Model.Ticket.DeveloperUser.FullName</h6>
+                <p class="text-secondary">@Model.Ticket.DeveloperUser?.Email</p>
+                <a asp-action="" asp-controller="" class="">Need to create profile view...</a>
+            </div>
+        }
+        else
+        {
+            <div>A developer has not been assigned to this ticket.</div>
+        }
+    </div>
+</div>
+<div class="col-6 my-3 text-dark">
+    <div class="card p-3 mb-3">
+        <h6>@Model.Ticket.Title</h6>
+        <p>@Model.Ticket.Description</p>
+        <div>
+            <span>Project Status</span>
+            @{
+                int numDays = (Model.Ticket.Project.StartDate - Model.Ticket.Project.EndDate).Days;
+                int progressValue = 0;
+                if (Model.Ticket.Project.EndDate < DateTime.Now)
+                {
+                    progressValue = 100;
+                }
+                else if (Model.Ticket.Project.StartDate > DateTime.Now)
+                {
+                    progressValue = 0;
+                }
+                else
+                {
+                    int daysRemaining = (Model.Ticket.Project.EndDate - DateTime.Now).Days;
+                    double fracOfDaysLeft = (double)daysRemaining / (double)numDays;
+
+                    if (fracOfDaysLeft < 0)
+                    {
+                        fracOfDaysLeft *= -1.0;
+                    }
+                    fracOfDaysLeft *= 100.0;
+
+                    progressValue = 100 - (int)Math.Round(fracOfDaysLeft, 0, MidpointRounding.AwayFromZero);
+                }
+            }
+            <progress max="100" value="@progressValue" class="w-100"></progress>
+            <a asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Ticket.Project.Id" class="x-sm">@Model.Ticket.Project.Name</a>
+        </div>
+    </div>
+    <div class="card p-3">
+        <p class="fw-bolder">Ticket Details</p>
+        <div class="row">
+            <div class="col-6 text-start">
+                <p>Created:</p>
+                <p>Project Deadline:</p>
+                <p>Priority:</p>
+                <p>Status:</p>
+            </div>
+            <div class="col-6 text-end">
+                <p class="w-100"><span class="btn btn-sm btn-outline-dark">@Model.Ticket.Created</span></p>
+                <p class="w-100"><span class="btn btn-sm btn-outline-dark">@Model.Ticket.Project.EndDate</span></p>
+                <p class="w-100"><span class="btn btn-sm btn-outline-dark">@Model.Ticket.TicketPriority.Name</span></p>
+                <p class="w-100"><span class="btn btn-sm btn-outline-dark">@Model.Ticket.TicketStatus.Name</span></p>
             </div>
         </div>
     </div>
-    <div>
-        <a asp-action="UnassignedTickets" asp-controller="Tickets">Unassigned Tickets</a>
-    </div>
 </div>
+
