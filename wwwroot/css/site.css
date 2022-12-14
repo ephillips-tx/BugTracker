@@ -25,18 +25,6 @@ body {
     min-height: 100vh;
 }
 
-*::-webkit-scrollbar {
-    width: 12px;                /* width of the entire scrollbar */
-}
-*::-webkit-scrollbar-track {
-    background: deeppink;       /* color of tracking area */
-}
-*::-webkit-scrollbar-thumb {
-    background-color: #333;   /* color of scroll thumb */
-    border-radius: 20px;        /* roundness of the scroll thumb */
-    border: 3px solid deeppink; /* creates padding around scroll thumb */
-}
-
 .landing-page-bg {
     background-image: url('/img/kelly-sikkema-ecHIFXN_qiE-unsplash.jpg');
     background-size: cover;
@@ -117,7 +105,29 @@ body {
     width: 90%;
 }
 
-/* CSS for Charts / Graphs */
+/*************************
+    CUSTOM SCROLLBAR
+*/
+*::-webkit-scrollbar {
+    width: 12px; /* width of the entire scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+    background: deeppink; /* color of tracking area */
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #333; /* color of scroll thumb */
+    border-radius: 20px; /* roundness of the scroll thumb */
+    border: 3px solid deeppink; /* creates padding around scroll thumb */
+}
+/*
+    END CUSTOM SCROLLBAR
+*************************/
+
+/************************* 
+    CHARTS & GRAPHS 
+*/
 #chartdiv {
     width: 100%;
     height: 500px;
@@ -199,6 +209,10 @@ tspan {
 svg.main-svg {
     min-height: calc(var(--h) + 175px);
 }
+
+/*
+    END CHARTS & GRAPHS
+************************ */
 
 #project-members {
     position: relative;

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Assign Developer";
 }
 
-<div class="col-6 my-3 text-dark">
+<div class="col-6 my-3 pe-2 text-dark">
     <div class="card p-3 mb-3">
         <p class="fw-bold">Select Developer</p>
         <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
@@ -25,19 +25,30 @@
         @if(Model.Ticket.DeveloperUser != null)
         {
             <div class="text-center">
-                <img src="@Model.Ticket.DeveloperUser.AvatarFileData" class="rounded-circle" />
-                <h6 class="fw-bold">@Model.Ticket.DeveloperUser.FullName</h6>
+                <a asp-action="MemberProfile" asp-controller="Home" asp-route-memberId="@Model.Ticket.DeveloperUserId">
+                    @if(Model.Ticket.DeveloperUser.AvatarFileData != null)
+                    {
+                        <img src="@Model.Ticket.DeveloperUser.AvatarFileData" class="rounded-circle" style="max-width: 18rem" />
+                    }
+                    else
+                    {
+                        <img src="~/img/defaultUserImage.png" class="rounded-circle" style="max-width: 18rem" />
+                    }
+                    <h6 class="fw-bold">@Model.Ticket.DeveloperUser.FullName</h6>
+                </a>
                 <p class="text-secondary">@Model.Ticket.DeveloperUser?.Email</p>
-                <a asp-action="" asp-controller="" class="">Need to create profile view...</a>
             </div>
         }
         else
         {
-            <div>A developer has not been assigned to this ticket.</div>
+            <div class="text-center">
+                <img src="~/img/defaultUserImage.png" class="rounded-circle" style="max-width: 18rem" />
+                <p>A developer has not been assigned to this ticket.</p>
+            </div>
         }
     </div>
 </div>
-<div class="col-6 my-3 text-dark">
+<div class="col-6 my-3 pe-5 text-dark">
     <div class="card p-3 mb-3">
         <h6>@Model.Ticket.Title</h6>
         <p>@Model.Ticket.Description</p>

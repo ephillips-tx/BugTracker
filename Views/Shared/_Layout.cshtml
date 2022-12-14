@@ -129,6 +129,8 @@
                                         <i class="fs-5 bi-cpu"></i><span class="ms-1 d-none d-sm-inline">Admin</span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
+                                        <li><a class="dropdown-item" asp-controller="" asp-action="">Company Invite</a></li>
+                                        <li><a class="dropdown-item" asp-controller="UserRoles" asp-action="ManageUserRoles">Manage Roles</a></li>
                                         <li><a class="dropdown-item" asp-controller="Projects" asp-action="UnassignedProjects">Unassigned Projects</a></li>
                                         <li><a class="dropdown-item" asp-controller="" asp-action="">Manage Projects</a></li>
                                         <li><a class="dropdown-item" asp-controller="Tickets" asp-action="UnassignedTickets">Assign Tickets</a></li>
@@ -144,7 +146,7 @@
                 <main class="@bgTheme" style="min-height: 100vh">
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <div class="row sticky-top fw-bolder blk-grad-top rounded align-content-center" style="height:10vh">
+                        <div class="row fw-bolder blk-grad-top rounded align-content-center" style="height:10vh">
                             <div class="col col-sm-4">
                                 <a asp-action="Dashboard" asp-controller="Home" class="ps-2 text-light text-decoration-none">
                                     <i class="fs-4 bi-house"></i>

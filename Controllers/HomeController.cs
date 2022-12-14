@@ -59,12 +59,12 @@ namespace BugTracker.Controllers
             return View(companyMembers);
         }
 
-        public async Task<IActionResult> MemberProfile(string id)
+        public async Task<IActionResult> MemberProfile(string memberId)
         {
             int companyId = User.Identity.GetCompanyId().Value;
-            BTUser user = await _userManager.FindByIdAsync(id);
+            BTUser user = await _userManager.FindByIdAsync(memberId);
             user.Company = await _companyInfoService.GetCompanyInfoByIdAsync(user.CompanyId);
-            user.Projects = await _projectService.GetUserProjectsAsync(id);
+            user.Projects = await _projectService.GetUserProjectsAsync(memberId);
 
             ViewData["CurrentPath"] = "Member Profile";
 

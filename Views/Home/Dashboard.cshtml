@@ -12,7 +12,7 @@
 }
 
 <div class="col-12 my-4">
-	<div class="mx-4">
+	<div class="me-4">
 		<div class="row mb-3">
 			<div class="col-lg-3 col-md-6 col-sm-6 mt-4">
 				<a asp-action="AllProjects" asp-controller="Projects" style="text-decoration:none">
@@ -165,7 +165,7 @@
 		</div>
 	</div>
 	<hr />
-	<div class="my-5 mx-4">
+	<div class="my-5 me-4">
 		<div class="row">
 			@* Projects Table *@
 			<div class="col-12 col-lg-6 mb-3">
@@ -313,7 +313,7 @@
 						<div class="card-body" style="overflow-y:auto;height:600px;">
 							@foreach(BTUser member in Model.Members)
 							{
-								<a asp-action="MemberProfile" asp-controller="Home" asp-route-id="@member.Id" class="link-style">
+								<a asp-action="MemberProfile" asp-controller="Home" asp-route-memberId="@member.Id" class="link-style">
 									<span style="font-weight:bold">@member.FullName</span>
 									<h6 style="font-size:small;color:deeppink">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</h6>
 								</a>

@@ -86,9 +86,10 @@ namespace BugTracker.Controllers
 
             ViewData["CurrentPath"] = "Assign Tickets";
 
-            List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
+            //List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
+            List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
 
-            if(User.IsInRole(nameof(Roles.Admin)))
+            if (User.IsInRole(nameof(Roles.Admin)))
             {
                 return View(tickets);
             }
