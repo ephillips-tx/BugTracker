@@ -13,6 +13,7 @@ using BugTracker.Models.Enums;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using BugTracker.Models.ViewModels;
+using System.Web;
 
 namespace BugTracker.Controllers
 {
@@ -159,11 +160,14 @@ namespace BugTracker.Controllers
             }
 
             Ticket ticket = await _ticketService.GetTicketByIdAsync(id.Value);
+            ticket.Description = HttpUtility.HtmlDecode(ticket.Description);
 
             if (ticket == null)
             {
                 return NotFound();
             }
+
+            ViewData["CurrentPath"] = "Tickets / Details";
 
             return View(ticket);
         }

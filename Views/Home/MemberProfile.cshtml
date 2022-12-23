@@ -14,7 +14,7 @@
 }
 
 <div class="col-md-4 mb-4">
-    <div class="card dash-card p-4">
+    <div class="card dash-card p-4 me-4">
         @if (Model.AvatarFileData != null)
         {
             <img src="data:image/*;base64,@(Convert.ToBase64String(Model.AvatarFileData))" class="img-thumbnail" style="max-width: 200px;" />
@@ -33,7 +33,7 @@
 @foreach (Project project in Model.Projects)
 {
     <div class="col-md-4 mb-5">
-        <div class="card dash-card p-4">
+        <div class="card dash-card p-4 me-4">
             <div class="fw-bold mb-2">
                 <div class="text-pink">Project: @project.Name</div>
                 <span style="font-size:small;color: #f8f9fa">@project.StartDate.ToString("MM.dd.yyyy")</span>

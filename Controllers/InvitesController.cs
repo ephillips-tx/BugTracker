@@ -8,23 +8,54 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using BugTracker.Extensions;
+using BugTracker.Services.Interfaces;
+using BugTracker.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using BugTracker.Data.Migrations;
+using System.Text.Encodings.Web;
+using System.ComponentModel;
+using System.Web;
+using BugTracker.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Controllers
 {
     public class InvitesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBTProjectService _projectService;
+        private readonly IBTInviteService _inviteService;
+        private readonly IEmailSender _emailService;
+        private readonly UserManager<BTUser> _userManager;
+        private readonly IBTCompanyInfoService _companyInfoService;
 
-        public InvitesController(ApplicationDbContext context)
+        public InvitesController(ApplicationDbContext context,
+                                 IBTInviteService inviteService,
+                                 IEmailSender emailService,
+                                 UserManager<BTUser> userManager,
+                                 IBTProjectService projectService,
+                                 IBTCompanyInfoService companyInfoService)
         {
             _context = context;
+            _inviteService = inviteService;
+            _emailService = emailService;
+            _userManager = userManager;
+            _projectService = projectService;
+            _companyInfoService = companyInfoService;
         }
 
         // GET: Invites
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Invites.Include(i => i.Company).Include(i => i.Invitee).Include(i => i.Invitor).Include(i => i.Project);
-            return View(await applicationDbContext.ToListAsync());
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Invite> invites = await _inviteService.GetAllInvitesByCompanyAsync(companyId);
+
+            return View(invites);
         }
 
         // GET: Invites/Details/5
@@ -50,33 +81,135 @@ namespace BugTracker.Controllers
         }
 
         // GET: Invites/Create
-        public IActionResult Create()
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create()
         {
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name");
+            int companyId = User.Identity.GetCompanyId().Value;
+            ViewData["CurrentPath"] = "Invites / New Invite";
+
+            ViewData["ProjectId"] = new SelectList(await _projectService.GetAllProjectsByCompanyAsync(companyId), "Id", "Name");
+
             return View();
         }
 
         // POST: Invites/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,InviteDate,JoinDate,CompanyToken,CompanyId,ProjectId,InvitorId,InviteeId,InviteeEmail,InviteeFirstName,InviteeLastName,IsValid")] Invite invite)
+        public async Task<IActionResult> Create([Bind("Id,ProjectId,InviteeEmail,InviteeFirstName,InviteeLastName,Message")] Invite invite)
         {
+            int companyId = User.Identity.GetCompanyId().Value;
+            BTUser btUser = await _userManager.GetUserAsync(User);
+            string returnUrl = null;
+
             if (ModelState.IsValid)
             {
-                _context.Add(invite);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    // Fill in other invite info, join date, companyId, etc. 
+                    invite.Company = await _companyInfoService.GetCompanyInfoByIdAsync(companyId);
+                    invite.CompanyId = invite.Company.Id;
+                    invite.CompanyToken = Guid.NewGuid();
+                    invite.InviteDate = DateTime.Today;
+                    invite.Invitor = btUser;
+                    invite.InvitorId = btUser.Id;
+                    invite.Message = HttpUtility.HtmlDecode(invite.Message);
+                    invite.Project = await _projectService.GetProjectByIdAsync(invite.ProjectId, companyId);
+
+                    // Add invite to DB
+                    await _inviteService.AddNewInviteAsync(invite);
+
+                    // Build 
+                    returnUrl ??= Url.Content("~/");
+                    var userId = btUser.Id;
+
+                    //var encodedCompanyId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(invite.CompanyId.ToString())); // decode in ProcessInvite
+                    var encodedCompanyId = invite.CompanyId;
+
+                    var callbackUrl = Url.Action("ProcessInvite","Invites",
+                        values: new { token = invite.CompanyToken, email = invite.InviteeEmail, company = encodedCompanyId },
+                        protocol: Request.Scheme);
+
+                    string subject = $"BugTracker: Invite to {invite.Company.Name}";
+                    invite.Message += $"\n  <br>\n  <br> Click the following link to join our team on BugTracker.\n  <br> \n  <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Join {btUser.Company.Name}</a>";
+                    invite.Message += $"\n  <br>\n  <br> Thank you,\n  <br> {invite.Invitor.FullName} \n";
+
+                    await _emailService.SendEmailAsync(invite.InviteeEmail, subject, invite.Message);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("*************> ERROR CREATING INVITE <**************");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.InnerException.Message);
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        Console.WriteLine(ex.InnerException.InnerException.Message);
+                    }
+                    Console.WriteLine("****************************************************");
+                    throw;
+                }
+                
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", invite.CompanyId);
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id", invite.InviteeId);
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id", invite.InvitorId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", invite.ProjectId);
+
             return View(invite);
+        }
+
+        // GET: Invites/ProcessInvite/5
+        [HttpGet]
+        public async Task<IActionResult> ProcessInvite(Guid token, string email, int company)
+        {
+            ViewData["CurrentPath"] = "Invite / Accept Invitation";
+
+            if (email == null)
+            {
+                Console.WriteLine("***  route values are null?  ***");
+                return NotFound();
+            }
+
+            //int companyId = Convert.ToInt32(WebEncoders.Base64UrlDecode(company));
+            bool result = await _inviteService.AnyInviteAsync(token, email, company);
+            if (result == false)
+            {
+                Console.WriteLine("*********> No Invite Found <*********");
+                Console.WriteLine(token);
+                Console.WriteLine(email);
+                Console.WriteLine(company);
+                Console.WriteLine("*************************************");
+
+                return NotFound();
+            }
+
+            try
+            {
+                Invite invite = await _inviteService.GetInviteAsync(token, email, company);
+                invite.Message = HttpUtility.HtmlDecode(invite.Message);
+
+                //Console.WriteLine("<<<<<<<<<<<< INVITE OBJ >>>>>>>>>>>>>");
+                //foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(invite))
+                //{
+                //    string name = descriptor.Name;
+                //    object value = descriptor.GetValue(invite);
+                //    Console.WriteLine($"{name}: {value}");
+                //}
+                //Console.WriteLine("***************************");
+
+                if (invite == null)
+                {
+                    Console.WriteLine("invite is null");
+                    return RedirectToAction("Index");
+                }
+
+                return View(invite);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         // GET: Invites/Edit/5
@@ -102,6 +235,7 @@ namespace BugTracker.Controllers
         // POST: Invites/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,InviteDate,JoinDate,CompanyToken,CompanyId,ProjectId,InvitorId,InviteeId,InviteeEmail,InviteeFirstName,InviteeLastName,IsValid")] Invite invite)
@@ -139,6 +273,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Invites/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Invites == null)

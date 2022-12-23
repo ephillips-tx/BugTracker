@@ -1,5 +1,6 @@
 ﻿#nullable disable
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace BugTracker.Models
 {
@@ -28,14 +29,20 @@ namespace BugTracker.Models
         [DisplayName("Invitee")]
         public string InviteeId { get; set; }
 
-        [DisplayName("Invitee Email")]
+        [DisplayName("Email")]
+        [EmailAddress]
+        [StringLength(254, ErrorMessage = "The {0} value cannot exceed {1} characters. ")]
         public string InviteeEmail { get; set; }
 
-        [DisplayName("Invitee First Name")]
+        [DisplayName("First Name")]
         public string InviteeFirstName { get; set; }
 
-        [DisplayName("Invitee Last Name")]
+        [DisplayName("Last Name")]
         public string InviteeLastName { get; set; }
+
+        [DisplayName("Message")]
+        [StringLength(10000, ErrorMessage = "The {0} value cannot exceed {1} characters. ")]
+        public string Message { get; set; }
 
         public bool IsValid { get; set; }
 

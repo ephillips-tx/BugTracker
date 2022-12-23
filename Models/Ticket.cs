@@ -15,6 +15,7 @@ namespace BugTracker.Models
 
         [Required]
         [DisplayName("Description")]
+        [StringLength(20000, ErrorMessage = "The {0} value cannot exceed {1} characters. ")]
         public string Description { get; set; }
 
         [DataType(DataType.DateTime)]

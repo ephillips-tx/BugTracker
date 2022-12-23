@@ -43,7 +43,7 @@
 					<div class="card col m-1 p-2">
 						<div class="card-body">
 							<h5>@Model.Title</h5>
-							<p>@Model.Description</p>
+							<p>@Html.Raw(Model.Description)</p>
 							<div class="progress-container progress-info m-b-25">
 								<span class="progress-badge" style="font-size:small">Project: @Model.Project.Name</span>
 								<div class="progress">
