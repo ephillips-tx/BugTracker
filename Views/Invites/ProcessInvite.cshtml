@@ -4,12 +4,12 @@
     ViewData["Title"] = "Accept Invite";
 }
 
-<div class="col-12 my-3">
+<div class="col-12 my-3 p-2">
     <h1>Invitation to join <strong>@Model.Company.Name</strong> from <strong>@Model.Invitor.FullName</strong></h1>
     <div class="card bg-dark p-4 my-3 text-center">
         <div>Welcome, @Model.InviteeFirstName @Model.InviteeLastName!</div>
         <div class="my-3">
-            @Model.Invitor.FullName has invited you to join @Model.Company.Name for project @Model.Project.Name. Click the button below to complete registration and begin working with the team.
+            @Model.Invitor.FullName has invited you to join @Model.Company.Name for project: "@Model.Project.Name." Click the button below to complete registration and begin working with the team.
         </div>
         <div class="my-2">
             <p class="fs-2">Message from @Model.Invitor.FullName:</p>

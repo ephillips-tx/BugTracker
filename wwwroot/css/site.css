@@ -11,6 +11,7 @@
     --bs-info: #0dcaf0;
     --bg-dark: #241f1f;
     --bs-success: #198754;
+    --bs-light: #f8f9fa;
 }
 
 html,
@@ -33,6 +34,16 @@ body {
 
 .bg-flatwhite {
     background-color: #f1f3f3;
+}
+.bg-shadow {
+    background-color: var(--bg-dark);
+    border-radius: 10px;
+}
+.bg-pink {
+    background-color: deeppink;
+}
+.bg-maroon {
+    background-color: maroon;
 }
 
 .login-panel-1 {
@@ -64,6 +75,7 @@ body {
     color: inherit;
 }
 .link-style:hover, .link-style:focus {
+    color: var(--bs-light);
     color: maroon;
 }
 .x-sm {
@@ -77,18 +89,44 @@ body {
     background-image: linear-gradient(to top,#333,#201c1c);
 }
 
+.nav-link {
+    color: inherit;
+}
+#userBox {
+    padding: .2rem .5rem .2rem .5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--bs-light);
+}
+
 .floating-nav {
     position: fixed;
     height: 95%;
-    width: 190px;
-    left: 25px;
-    border: 0px solid black;
-    border-radius: 10px;
+    width: inherit;
 }
 .floating-nav > ul > * {
-    margin: .4rem 0
+    width: 100%;
+    margin: .4rem 0;
+    padding: .2rem .5rem .2rem .5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--bs-light);
 }
-
+.nav-link:active,
+.nav-link:visited,
+.floating-nav > ul > *:active,
+.floating-nav > ul > *:visited {
+    color: inherit;
+}
+.nav-link:hover,
+.nav-link:focus,
+.floating-nav > ul > *:hover,
+.floating-nav > ul > *:focus,
+#userBox:hover,
+#userBox:focus {
+    background-color: deeppink;
+    color: var(--bs-light);
+}
 .dash-card {
     background-color: var(--bg-dark);
     box-shadow: 0px 8px 5px -5px maroon;
@@ -216,11 +254,23 @@ svg.main-svg {
 
 #project-members {
     position: relative;
+    overflow: auto;
 }
 #project-members > * {
     position:absolute;
 }
+.floating-arrs{
+    position: absolute;
 
+}
+.floating-arrs:first-child {
+    left: 0;
+    top: 50%;
+}
+.floating-arrs:last-child {
+    right: 0;
+    top: 50%;
+}
 .bg-lightblack {
     background-color: #333;
 }

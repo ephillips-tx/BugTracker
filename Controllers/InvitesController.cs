@@ -133,7 +133,7 @@ namespace BugTracker.Controllers
                         protocol: Request.Scheme);
 
                     string subject = $"BugTracker: Invite to {invite.Company.Name}";
-                    invite.Message += $"\n  <br>\n  <br> Click the following link to join our team on BugTracker.\n  <br> \n  <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Join {btUser.Company.Name}</a>";
+                    invite.Message += $"\n  <br>\n  <br> Click the link below to join our team on BugTracker.\n  <br> \n  <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Join {btUser.Company.Name}</a>";
                     invite.Message += $"\n  <br>\n  <br> Thank you,\n  <br> {invite.Invitor.FullName} \n";
 
                     await _emailService.SendEmailAsync(invite.InviteeEmail, subject, invite.Message);
@@ -213,22 +213,26 @@ namespace BugTracker.Controllers
         }
 
         // GET: Invites/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Invites == null)
+            ViewData["CurrentPath"] = "Invites / Edit Invite";
+            if (id == null)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             {
                 return NotFound();
             }
 
-            Invite invite = await _context.Invites.FindAsync(id);
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            int inviteId = id.GetValueOrDefault(-1);
+            Invite invite = await _inviteService.GetInviteAsync(inviteId, companyId);
+            ViewData["ProjectId"] = new SelectList(await _projectService.GetAllProjectsByCompanyAsync(companyId), "Id", "Name");
+
             if (invite == null)
             {
                 return NotFound();
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", invite.CompanyId);
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id", invite.InviteeId);
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id", invite.InvitorId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", invite.ProjectId);
+
             return View(invite);
         }
 

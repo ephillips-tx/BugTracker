@@ -31,7 +31,13 @@ namespace BugTracker.Controllers
 
         public IActionResult Index()
         {
-            ViewData["Title"] = "Home Page";
+            ViewData["Title"] = "Welcome Page";
+            var signedIn = User.Identity?.Name;
+            if (!String.IsNullOrEmpty(signedIn))
+            {
+                return RedirectToAction(nameof(Dashboard));
+            }
+
             return View();
         }
 

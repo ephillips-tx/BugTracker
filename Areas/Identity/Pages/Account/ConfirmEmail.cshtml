@@ -2,7 +2,12 @@
 @model ConfirmEmailModel
 @{
     ViewData["Title"] = "Confirm email";
+    ViewData["CurrentPath"] = "Email Confirmation";
 }
 
-<h1>@ViewData["Title"]</h1>
-<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="col-12">
+    <h1 class="mt-5 mb-2">@ViewData["Title"]</h1>
+    <partial name="_StatusMessage" model="Model.StatusMessage" />
+    <a asp-controller="Home" asp-action="Index" class="btn btn-lg btn-primary">Log In</a>
+</div>
+

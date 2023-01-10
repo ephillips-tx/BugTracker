@@ -7,51 +7,69 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using BugTracker.Models.ViewModels;
+using BugTracker.Services;
+using BugTracker.Services.Interfaces;
+using BugTracker.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTracker.Controllers
 {
     public class NotificationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBTNotificationService _notificationService;
+        private readonly UserManager<BTUser> _userManager;
 
-        public NotificationsController(ApplicationDbContext context)
+        public NotificationsController(ApplicationDbContext context,
+                                       IBTNotificationService notificationService,
+                                       UserManager<BTUser> userManager)
         {
             _context = context;
+            _notificationService = notificationService;
+            _userManager = userManager;
         }
 
         // GET: Notifications
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Notifications.Include(n => n.Recipient).Include(n => n.Sender).Include(n => n.Ticket);
-            return View(await applicationDbContext.ToListAsync());
+            BTUser btUser = await _userManager.GetUserAsync(User);
+            ViewData["CurrentPath"] = "Message Box";
+
+            List<Notification> notifications = await _notificationService.GetReceivedNotificationsAsync(btUser.Id);
+
+            return View(notifications);
         }
 
         // GET: Notifications/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Notifications == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var notification = await _context.Notifications
-                .Include(n => n.Recipient)
-                .Include(n => n.Sender)
-                .Include(n => n.Ticket)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (notification == null)
+            NotificationDetailsViewModel model = new();
+            BTUser btUser = await _userManager.GetUserAsync(User);
+
+            ViewData["CurrentPath"] = "Message";
+
+            model.NotificationsList = await _notificationService.GetReceivedNotificationsAsync(btUser.Id);
+            model.Notification = await _notificationService.GetNotificationByIdAsync(id.Value);
+
+            if (model.Notification == null)
             {
                 return NotFound();
             }
 
-            return View(notification);
+            return View(model);
         }
 
         // GET: Notifications/Create
         public IActionResult Create()
         {
-            ViewData["RecipientId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["RecipientId"] = new SelectList(_context.Users, "Id", "FullName");
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "FullName");
             ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description");
             return View();
         }

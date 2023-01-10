@@ -13,10 +13,10 @@
     
     @if (SignInManager.IsSignedIn(User))
     {
-        <div class="">
+        <div id="userBox" class="bg-shadow">
             <div class="pb-0 mb-0">Welcome,</div>
-            <span class="badge bg-dark">@roleName</span>
-            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle link-style" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="badge bg-maroon">@roleName</span>
+            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-light" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="" width="28" height="28" class="rounded-circle">
                 <span class="d-none d-sm-inline mx-1">@btUser.FullName</span>
             </a>
@@ -28,8 +28,6 @@
                 <li><a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">Sign out</a></li>
             </ul>
         </div>
-        
-
     }
     else
     {

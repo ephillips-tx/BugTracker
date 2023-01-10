@@ -1,71 +1,75 @@
 ﻿@model IEnumerable<BugTracker.Models.Notification>
+@using BugTracker.Models.Enums
+@using BugTracker.Services.Interfaces;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<BTUser> _userManager;
+@inject IBTNotificationService _notificationService;
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Notifications";
+    BTUser btUser = await _userManager.GetUserAsync(User);
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Message)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Viewed)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Recipient)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sender)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Message)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Viewed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ticket.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Recipient.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sender.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="col-12">
+    <table class="table table-hover align-middle">
+        <thead class="text-pink">
+            <tr>
+                <th>Date Received</th>
+                <th>Sender</th>
+                <th>Title</th>
+                <th>Message Preview</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var notification in Model)
+            {
+                string notificationStyle = "fst-bold";
+                if(!notification.Viewed)
+                {
+                    notificationStyle = "bg-secondary fst-italic";
+                }
+                BTUser sender = await _userManager.FindByIdAsync(notification.RecipientId);
+
+                <tr class="@notificationStyle">
+                    <td>
+                        <div>
+                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
+                                <span style="font-size:small;color: #f8f9fa">Created @notification.Created.ToString("dd MMMM, yyyy")</span>
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
+                                if (member.AvatarFileData != null)
+                                {
+                                <img src="data:image/*;base64,@(Convert.ToBase64String(sender.AvatarFileData))" class="rounded-circle transparency-light" style="width:30px;height:30px;" />
+                                }
+                                else
+                                {
+                                <img src="~/img/defaultUserImage.png" class="rounded-circle transparency-light" style="width:30px;height:30px;" />
+                                }
+                                <span>@sender.FullName</span>
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
+                                <span>@notification.Title</span>
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
+                                <span>@notification.Message.Substring(0,100)</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

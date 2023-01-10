@@ -46,6 +46,7 @@ namespace BugTracker.Controllers
 
         public async Task<IActionResult> MyProjects()
         {
+            ViewData["CurrentPath"] = "My Projects";
             string userId = _userManager.GetUserId(User);
 
             List<Project> projects = await _projectService.GetUserProjectsAsync(userId);
@@ -87,6 +88,7 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> AssignPM(int id)
         {
             int companyId = User.Identity.GetCompanyId().Value;
+            ViewData["CurrentPath"] = "Assign Project Manager";
 
             AssignPMViewModel model = new();
             try
@@ -147,6 +149,7 @@ namespace BugTracker.Controllers
             model.Users = new MultiSelectList(companyMembers, "Id", "FullName", projectMembers);
 
             ViewData["Title"] = "Assign Members";
+            ViewData["CurrentPath"] = "Assign Members";
 
             return View(model);
         }
@@ -199,8 +202,8 @@ namespace BugTracker.Controllers
             }
 
             int companyId = User.Identity.GetCompanyId().Value;
-
             Project project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+            ViewData["CurrentPath"] = project.Name;
 
             if (project == null)
             {
@@ -267,10 +270,8 @@ namespace BugTracker.Controllers
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
-
 
             }
 
