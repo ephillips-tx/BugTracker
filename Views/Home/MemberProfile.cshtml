@@ -26,7 +26,7 @@
         <h4>@Model.FullName</h4>
         <span class="badge bg-warning w-25">@roleName</span>
         <div><span class="fw-bold">Company:</span> @Model.Company.Name</div>
-        <button type="button" class="btn btn-sm btn-success my-3 w-25 x-sm"><i class="bi-envelope"></i>&nbsp;<span class="">Message</span></button>
+        <a asp-action="Create" asp-controller="Notifications" class="btn btn-sm btn-danger my-3 w-25 x-sm"><i class="bi-envelope"></i>&nbsp;<span class="">Message</span></a>
     </div>
 </div>
 <div class="col-md-8 mb-4"></div>

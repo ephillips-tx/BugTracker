@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using BugTracker.Services.Interfaces;
+using BugTracker.Models.Enums;
 
 namespace BugTracker.Areas.Identity.Pages.Account
 {
@@ -33,31 +34,34 @@ namespace BugTracker.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly IBTInviteService _inviteService;
         private readonly IBTProjectService _projectService;
+        private readonly IBTRolesService _rolesService;
 
-        public RegisterModel(
-            UserManager<BTUser> userManager,
-            IUserStore<BTUser> userStore,
-            SignInManager<BTUser> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            IBTInviteService inviteService,
-            IBTProjectService projectService)
-        {
-            _userManager = userManager;
-            _userStore = userStore;
-            _emailStore = GetEmailStore();
-            _signInManager = signInManager;
-            _logger = logger;
-            _emailSender = emailSender;
-            _inviteService = inviteService;
-            _projectService = projectService;
-        }
+		public RegisterModel(
+			UserManager<BTUser> userManager,
+			IUserStore<BTUser> userStore,
+			SignInManager<BTUser> signInManager,
+			ILogger<RegisterModel> logger,
+			IEmailSender emailSender,
+			IBTInviteService inviteService,
+			IBTProjectService projectService,
+			IBTRolesService rolesService)
+		{
+			_userManager = userManager;
+			_userStore = userStore;
+			_emailStore = GetEmailStore();
+			_signInManager = signInManager;
+			_logger = logger;
+			_emailSender = emailSender;
+			_inviteService = inviteService;
+			_projectService = projectService;
+			_rolesService = rolesService;
+		}
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [BindProperty]
+		/// <summary>
+		///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		[BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
@@ -166,6 +170,7 @@ namespace BugTracker.Areas.Identity.Pages.Account
                         await _inviteService.AcceptInviteAsync(invite.CompanyToken, userId, invite.CompanyId);
 
                         await _projectService.AddUserToProjectAsync(userId, invite.ProjectId);
+                        await _rolesService.AddUserToRoleAsync(user, nameof(Roles.Submitter));
 
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");

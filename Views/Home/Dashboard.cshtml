@@ -264,6 +264,10 @@
 												{
 													<td><span class="btn btn-small btn-outline-success">@ticket.TicketStatus.Name</span></td>
 												}
+												else if (ticket.TicketStatus.Name == "Development")
+												{
+													<td><span class="btn btn-small btn-outline-info">@ticket.TicketStatus.Name</span></td>
+												}
 												else
 												{
 													<td><span class="btn btn-small btn-outline-secondary">@ticket.TicketStatus.Name </span></td>

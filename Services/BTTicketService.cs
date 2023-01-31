@@ -11,14 +11,17 @@ namespace BugTracker.Services
         private readonly ApplicationDbContext _context;
         private readonly IBTRolesService _rolesService;
         private readonly IBTProjectService _projectService;
+        private readonly IBTNotificationService _notificationService;
 
         public BTTicketService(ApplicationDbContext context,
                                IBTRolesService rolesService,
-                               IBTProjectService projectService)
+                               IBTProjectService projectService,
+                               IBTNotificationService notificationService)
         {
             _context = context;
             _rolesService = rolesService;
             _projectService = projectService;
+            _notificationService = notificationService;
         }
 
         #region Add New Ticket
@@ -58,12 +61,37 @@ namespace BugTracker.Services
         {
             try
             {
+                int companyId = ticketComment.Ticket.Project.CompanyId.Value;
+
+                List<BTUser> projectsMembers = (await _projectService.GetProjectByIdAsync(ticketComment.Ticket.ProjectId, companyId)).Members.ToList();
+
                 await _context.AddAsync(ticketComment);
+
+                foreach(var member in projectsMembers)
+                {
+                    Notification notification = new Notification()
+                    {
+                        TicketId = ticketComment.TicketId,
+                        Title = $"New Comment - {ticketComment.User.FullName} on {ticketComment.Ticket.Title}",
+                        Message = $"{ticketComment.User.FullName} created a new comment on Ticket: {ticketComment.Ticket.Title}. \n\nThe comment is: \n{ticketComment.Comment}. \n\nThis comment was added on {ticketComment.Created.ToString("dd MMMM, yyyy")}. \n\n The associated project is: {ticketComment.Ticket.Project.Name}.",
+                        Created = DateTime.Now,
+                        RecipientId = member.Id,
+                        SenderId = ticketComment.UserId,
+                        Viewed = false,
+                        Ticket = ticketComment.Ticket,
+                        Recipient = member,
+                        Sender = ticketComment.User
+                    };
+                    await _notificationService.AddNotificationAsync(notification);
+                }
+
                 await _context.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine("****** ERROR ADDING TICKET COMMENT ******");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("**************--------------*************");
                 throw;
             }
         }

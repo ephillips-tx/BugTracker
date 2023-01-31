@@ -1,4 +1,4 @@
-﻿@model BugTracker.Models.Notification
+﻿@model BugTracker.Models.ViewModels.NotificationDetailsViewModel
 
 
 @{
@@ -24,50 +24,50 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.Notification.Title)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.Notification.Title)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Message)
+            @Html.DisplayNameFor(model => model.Notification.Message)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Message)
+            @Html.DisplayFor(model => model.Notification.Message)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
+            @Html.DisplayNameFor(model => model.Notification.Created)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
+            @Html.DisplayFor(model => model.Notification.Created)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Viewed)
+            @Html.DisplayNameFor(model => model.Notification.Viewed)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Viewed)
+            @Html.DisplayFor(model => model.Notification.Viewed)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ticket)
+            @Html.DisplayNameFor(model => model.Notification.Ticket)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Description)
+            @Html.DisplayFor(model => model.Notification.Ticket.Description)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipient)
+            @Html.DisplayNameFor(model => model.Notification.Recipient)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Recipient.Id)
+            @Html.DisplayFor(model => model.Notification.Recipient.Id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sender)
+            @Html.DisplayNameFor(model => model.Notification.Sender)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sender.Id)
+            @Html.DisplayFor(model => model.Notification.Sender.Id)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Notification?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

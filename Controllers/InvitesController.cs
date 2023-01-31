@@ -125,8 +125,8 @@ namespace BugTracker.Controllers
                     returnUrl ??= Url.Content("~/");
                     var userId = btUser.Id;
 
-                    //var encodedCompanyId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(invite.CompanyId.ToString())); // decode in ProcessInvite
-                    var encodedCompanyId = invite.CompanyId;
+                    var encodedCompanyId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(invite.CompanyId.ToString())); // decode in ProcessInvite
+                    //var encodedCompanyId = invite.CompanyId;
 
                     var callbackUrl = Url.Action("ProcessInvite","Invites",
                         values: new { token = invite.CompanyToken, email = invite.InviteeEmail, company = encodedCompanyId },
@@ -160,7 +160,7 @@ namespace BugTracker.Controllers
 
         // GET: Invites/ProcessInvite/5
         [HttpGet]
-        public async Task<IActionResult> ProcessInvite(Guid token, string email, int company)
+        public async Task<IActionResult> ProcessInvite(Guid token, string email, string company)
         {
             ViewData["CurrentPath"] = "Invite / Accept Invitation";
 
@@ -170,9 +170,9 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            //int companyId = Convert.ToInt32(WebEncoders.Base64UrlDecode(company));
-            bool result = await _inviteService.AnyInviteAsync(token, email, company);
-            if (result == false)
+            int companyId = Convert.ToInt32(Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(company)));
+            bool result = await _inviteService.AnyInviteAsync(token, email, companyId);
+            if (!result)
             {
                 Console.WriteLine("*********> No Invite Found <*********");
                 Console.WriteLine(token);
@@ -185,7 +185,7 @@ namespace BugTracker.Controllers
 
             try
             {
-                Invite invite = await _inviteService.GetInviteAsync(token, email, company);
+                Invite invite = await _inviteService.GetInviteAsync(token, email, companyId);
                 invite.Message = HttpUtility.HtmlDecode(invite.Message);
 
                 //Console.WriteLine("<<<<<<<<<<<< INVITE OBJ >>>>>>>>>>>>>");
@@ -208,6 +208,8 @@ namespace BugTracker.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.WriteLine("&&&&&&&&&&");
+                Console.WriteLine(ex.InnerException);
                 throw;
             }
         }

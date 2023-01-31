@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Identity\Pages\Account\Register.cshtml.cs" />
     <Compile Remove="Controllers\ProjectPrioritiesController.cs" />
     <Compile Remove="Controllers\TicketAttachmentsController.cs" />
     <Compile Remove="Controllers\TicketCommentsController.cs" />

@@ -1,4 +1,5 @@
 ﻿@model BugTracker.Models.ViewModels.AssignDeveloperViewModel
+@using BugTracker.Models.Enums
 
 @{
     ViewData["Title"] = "Assign Developer";
@@ -14,9 +15,13 @@
                     <option>Select Developer</option>
                 </select>
             </div>
-            <div class="form-group mt-3">
+            <div class="form-group mt-3 d-flex">
                 <input type="submit" value="Assign" class="btn btn-outline-warning" />
-                <a asp-action="MyTickets" asp-controller="Tickets" class="btn btn-outline-secondary">Cancel</a>
+                <a asp-action="MyTickets" asp-controller="Tickets" class="btn btn-outline-secondary ms-2">Cancel</a>
+                @if (User.IsInRole(nameof(Roles.Admin)))
+                {
+                    <a asp-action="AssignMembers" asp-controller="Projects" asp-route-id="@Model.Ticket.Project.Id" class="btn btn-outline-danger ms-auto">Assign Members</a>
+                }
             </div>
         </form>
     </div>

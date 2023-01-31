@@ -4,19 +4,21 @@
     ViewData["Title"] = "Accept Invite";
 }
 
-<div class="col-12 my-3 p-2">
+<div class="col-12 my-5 p-2">
     <h1>Invitation to join <strong>@Model.Company.Name</strong> from <strong>@Model.Invitor.FullName</strong></h1>
-    <div class="card bg-dark p-4 my-3 text-center">
-        <div>Welcome, @Model.InviteeFirstName @Model.InviteeLastName!</div>
-        <div class="my-3">
-            @Model.Invitor.FullName has invited you to join @Model.Company.Name for project: "@Model.Project.Name." Click the button below to complete registration and begin working with the team.
-        </div>
-        <div class="my-2">
-            <p class="fs-2">Message from @Model.Invitor.FullName:</p>
-            <div class="bg-secondary rounded p-5 text-center">@Html.Raw(Model.Message)</div>
-        </div>
-        <div class="my-2">
-            <a asp-area="Identity" asp-page="/Account/RegisterByInvite" asp-route-inviteId="@Model.Id" asp-route-companyId="@Model.CompanyId" asp-route-companyName="@Model.Company.Name" asp-route-email="@Model.InviteeEmail" asp-route-firstName="@Model.InviteeFirstName" asp-route-lastName="@Model.InviteeLastName" class="btn btn-sm btn-primary"><i class="fs-5 bi-door-open"></i>&nbsp;JOIN</a>
+    <div class="card bg-dark p-4 my-3 me-4">
+        <div class="card-header">Welcome, @Model.InviteeFirstName @Model.InviteeLastName!</div>
+        <div class="card-body text-center">
+            <div class="my-3">
+                @Model.Invitor.FullName has invited you to join @Model.Company.Name for project: "@Model.Project.Name." Click the button below to complete registration and begin working with the team.
+            </div>
+            <div class="my-2">
+                <p class="fs-2">Message from @Model.Invitor.FullName:</p>
+                <div class="bg-secondary rounded p-5 text-center">@Html.Raw(Model.Message)</div>
+            </div>
+            <div class="my-2">
+                <a asp-area="Identity" asp-page="/Account/RegisterByInvite" asp-route-inviteId="@Model.Id" asp-route-companyId="@Model.CompanyId" asp-route-companyName="@Model.Company.Name" asp-route-email="@Model.InviteeEmail" asp-route-firstName="@Model.InviteeFirstName" asp-route-lastName="@Model.InviteeLastName" class="btn btn-sm btn-danger"><i class="fs-5 bi-door-open"></i>&nbsp;JOIN</a>
+            </div>
         </div>
     </div>
 </div>

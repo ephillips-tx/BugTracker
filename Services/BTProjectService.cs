@@ -16,7 +16,7 @@ namespace BugTracker.Services
         #endregion
 
         #region Constructor
-        public BTProjectService(ApplicationDbContext context, 
+        public BTProjectService(ApplicationDbContext context,
                                 IBTRolesService rolesService)
         {
             _context = context;
@@ -84,8 +84,11 @@ namespace BugTracker.Services
                         await _context.SaveChangesAsync();
                         return true;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine("******** Error adding user to project *********");
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine("*********&&&&&&&&&&&&&&&**&&&&&&&&&&&&&********");
                         throw;
                     }
                 }

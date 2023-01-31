@@ -160,6 +160,10 @@ namespace BugTracker.Controllers
             }
 
             Ticket ticket = await _ticketService.GetTicketByIdAsync(id.Value);
+            foreach(var h in ticket.History)
+            {
+                h.User = await _userManager.FindByIdAsync(h.UserId);
+            }
             ticket.Description = HttpUtility.HtmlDecode(ticket.Description);
 
             if (ticket == null)
@@ -207,7 +211,7 @@ namespace BugTracker.Controllers
             {
                 try
                 {
-                    ticket.Created = DateTime.UtcNow;
+                    ticket.Created = DateTime.Now;
                     ticket.OwnerUserId = btUser.Id;
                     ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(BTTicketStatus.New))).Value;
 
@@ -319,7 +323,8 @@ namespace BugTracker.Controllers
                 try
                 {
                     ticketComment.UserId = _userManager.GetUserId(User);
-                    ticketComment.Created = DateTime.UtcNow;
+                    ticketComment.Created = DateTime.Now;
+                    ticketComment.Ticket = await _ticketService.GetTicketByIdAsync(ticketComment.TicketId);
 
                     await _ticketService.AddTicketCommentAsync(ticketComment);
 

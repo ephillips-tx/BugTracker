@@ -39,14 +39,12 @@ namespace BugTracker.Services
         {
             try
             {
-                return await _context.Notifications.Include(n => n.Title)
-                                                   .Include(n => n.Message)
-                                                   .Include(n => n.Created)
-                                                   .Include(n => n.Recipient)
-                                                   .Include(n => n.Sender)
-                                                   .Include(n => n.Viewed)
-                                                   .Include(n => n.Ticket)
-                                                   .FirstOrDefaultAsync(n => n.Id == notificationId);
+                return await _context.Notifications
+                                     .Include(n => n.Recipient)
+                                     .Include(n => n.Sender)
+                                     .Include(n => n.Ticket)
+                                        .ThenInclude(t => t.Project)
+                                     .FirstOrDefaultAsync(n => n.Id == notificationId);
             }
             catch (Exception ex)
             {

@@ -147,7 +147,7 @@ body {
     CUSTOM SCROLLBAR
 */
 *::-webkit-scrollbar {
-    width: 12px; /* width of the entire scrollbar */
+    width: 10px; /* width of the entire scrollbar */
 }
 
 *::-webkit-scrollbar-track {
@@ -158,6 +158,18 @@ body {
     background-color: #333; /* color of scroll thumb */
     border-radius: 20px; /* roundness of the scroll thumb */
     border: 3px solid deeppink; /* creates padding around scroll thumb */
+}
+#project-members::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+#project-members::-webkit-scrollbar-track {
+    background: inherit;
+}
+#project-members::-webkit-scrollbar-thumb {
+    background-color: #333; /* color of scroll thumb */
+    border-radius: 20px; /* roundness of the scroll thumb */
+    border: 0px solid deeppink; /* creates padding around scroll thumb */
 }
 /*
     END CUSTOM SCROLLBAR

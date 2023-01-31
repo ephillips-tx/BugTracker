@@ -8,68 +8,95 @@
 @{
     ViewData["Title"] = "My Notifications";
     BTUser btUser = await _userManager.GetUserAsync(User);
+    //Console.WriteLine($"There are {Model.Count()} notifications");
 }
 
 
-<div class="col-12">
-    <table class="table table-hover align-middle">
-        <thead class="text-pink">
-            <tr>
-                <th>Date Received</th>
-                <th>Sender</th>
-                <th>Title</th>
-                <th>Message Preview</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var notification in Model)
-            {
-                string notificationStyle = "fst-bold";
-                if(!notification.Viewed)
-                {
-                    notificationStyle = "bg-secondary fst-italic";
-                }
-                BTUser sender = await _userManager.FindByIdAsync(notification.RecipientId);
+<div class="col-12 my-4">
+    <div class="row ms-2 me-3 bg-dark rounded dash-card">
+        <div class="col-3 border-end">
+            <div class="mt-3 mx-auto">
+                <a asp-action="Create" asp-controller="Notifications" class="btn btn-block w-100 btn-danger">Compose</a>
+            </div>
+            <div class="my-4 d-flex">
+                <span class="w-100 d-flex align-items-center"><i class="fs-3 bi-envelope"></i>&nbsp;&nbsp;New</span>
+                <button class="flex-shrink-1 btn btn-outline-info">@Model.Count()</button>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="row me-4 p-4">
+                <div class="col-6 p-3">
+                    <span class="h6 fw-bold">Notifications List</span>
+                </div>
+                <div class="col-6 p-3">
+                    <form method="post" class="align-self-end">
+                        <div class="input-group border-0">
+                            <input type="text" class="form-control" placeholder="Search Mail" />
+                            <button type="submit" class="input-group-text border-0"><i class="bi bi-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-12 dropdown">
+                    <input type="checkbox" name="checkAll" class="mx-3" />
+                    <button type="button" class="ms-2"><i class="fs-6 bi-arrow-repeat"></i>&nbsp;Refresh</button>
+                    <button type="button" class="me-1"><i class="fs-6 bi-archive-fill"></i>&nbsp;Archive</button>
+                    <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">More</button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item">Another option 1</li>
+                        <li class="dropdown-item">Another option 2</li>
+                    </ul>
+                </div>
+                @*>>> Mailbox <<<*@
+                <div class="col-12">
+                    <hr class="bg-light" />
+                    @foreach (var notification in Model)
+                    {
+                        string notificationStyle = "row fw-bold";
+                        if (!notification.Viewed)
+                        {
+                            notificationStyle = "row bg-secondary fst-italic";
+                        }
+                        BTUser sender = await _userManager.FindByIdAsync(notification.SenderId);
 
-                <tr class="@notificationStyle">
-                    <td>
-                        <div>
-                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
-                                <span style="font-size:small;color: #f8f9fa">Created @notification.Created.ToString("dd MMMM, yyyy")</span>
-                            </a>
+                        <div class="@notificationStyle">
+                            <div class="col-1">
+                                <input type="checkbox" class="" />
+                            </div>
+                            <div class="col-9">
+                                <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" class="text-decoration-none align-middle p-1 text-light" style="border-radius: 25px;display: inline-block">
+                                    <div>
+                                        @if (sender.AvatarFileData != null)
+                                        {
+                                            <img src="data:image/*;base64,@(Convert.ToBase64String(sender.AvatarFileData))" class="rounded-circle transparency-light" style="width:30px;height:30px;" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/img/defaultUserImage.png" class="rounded-circle transparency-light" style="width:30px;height:30px;" />
+                                        }
+                                        <span class="fw-bolder text-maroon fs-5">@sender.FullName</span>
+                                        <span class="x-sm">@notification.Created.ToString("dd MMMM, yyyy")</span>
+                                    </div>
+                                    <div>
+                                        <p class="small fw-bold">@notification.Title</p>
+                                        <span class="x-sm">@notification.Message.Substring(0,75)</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-2">
+                                <div class="h-100 d-flex align-items-center">
+                                    @*Read?*@
+                                    <a asp-action="" asp-controller="Notifications" asp-route-id="@notification.Id" class="text-decoration-none">
+                                        <i class="fs-4 bi-archive-fill ms-auto me-2 text-warning"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-controller="Notifications" asp-route-id="@notification.Id" class="text-decoration-none">
+                                        <i class="fs-4 bi-trash-fill ms-2 me-auto text-danger"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                    <td>
-                        <div>
-                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
-                                if (member.AvatarFileData != null)
-                                {
-                                <img src="data:image/*;base64,@(Convert.ToBase64String(sender.AvatarFileData))" class="rounded-circle transparency-light" style="width:30px;height:30px;" />
-                                }
-                                else
-                                {
-                                <img src="~/img/defaultUserImage.png" class="rounded-circle transparency-light" style="width:30px;height:30px;" />
-                                }
-                                <span>@sender.FullName</span>
-                            </a>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
-                                <span>@notification.Title</span>
-                            </a>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id" style="color:#f8f9fa">
-                                <span>@notification.Message.Substring(0,100)</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

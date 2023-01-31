@@ -9,10 +9,13 @@ namespace BugTracker.Services
     public class BTInviteService : IBTInviteService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBTProjectService _projectService;
 
-        public BTInviteService(ApplicationDbContext context)
+        public BTInviteService(ApplicationDbContext context,
+                               IBTProjectService projectService)
         {
             _context = context;
+            _projectService = projectService;
         }
 
         #region Accept Invite 
@@ -31,12 +34,15 @@ namespace BugTracker.Services
                 invite.IsValid = false;
                 invite.JoinDate = DateTime.Today;
                 invite.InviteeId = userId;
+
                 await _context.SaveChangesAsync();
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error accepting invite.");
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }

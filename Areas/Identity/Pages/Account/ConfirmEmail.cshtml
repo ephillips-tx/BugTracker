@@ -5,7 +5,7 @@
     ViewData["CurrentPath"] = "Email Confirmation";
 }
 
-<div class="col-12">
+<div class="col-12 mx-auto" style="min-height: 100vh; max-width: 80%">
     <h1 class="mt-5 mb-2">@ViewData["Title"]</h1>
     <partial name="_StatusMessage" model="Model.StatusMessage" />
     <a asp-controller="Home" asp-action="Index" class="btn btn-lg btn-primary">Log In</a>
