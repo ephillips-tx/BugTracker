@@ -26,25 +26,28 @@ namespace BugTracker.Controllers
         private readonly IBTProjectService _projectService;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTCompanyInfoService _companyInfoService;
+        private readonly IBTSearchService _searchService;
 
-        //public UserManager<BTUser> UserManager { get; }
+		//public UserManager<BTUser> UserManager { get; }
 
-        public ProjectsController(IBTRolesService rolesService,
-                                  IBTLookupService lookupService,
-                                  IBTFileService fileService,
-                                  IBTProjectService projectService,
-                                  UserManager<BTUser> userManager,
-                                  IBTCompanyInfoService companyInfoService)
-        {
-            _rolesService = rolesService;
-            _lookupService = lookupService;
-            _fileService = fileService;
-            _projectService = projectService;
-            _userManager = userManager;
-            _companyInfoService = companyInfoService;
-        }
+		public ProjectsController(IBTRolesService rolesService,
+								  IBTLookupService lookupService,
+								  IBTFileService fileService,
+								  IBTProjectService projectService,
+								  UserManager<BTUser> userManager,
+								  IBTCompanyInfoService companyInfoService,
+								  IBTSearchService searchService)
+		{
+			_rolesService = rolesService;
+			_lookupService = lookupService;
+			_fileService = fileService;
+			_projectService = projectService;
+			_userManager = userManager;
+			_companyInfoService = companyInfoService;
+			_searchService = searchService;
+		}
 
-        public async Task<IActionResult> MyProjects()
+		public async Task<IActionResult> MyProjects()
         {
             ViewData["CurrentPath"] = "My Projects";
             string userId = _userManager.GetUserId(User);
@@ -212,6 +215,26 @@ namespace BugTracker.Controllers
 
             return View(project);
         }
+
+        // GET: Projects/Search
+        public async Task<IActionResult> SearchIndex(string? searchTerm)
+        {
+            if(String.IsNullOrEmpty(searchTerm))
+            {
+                return NotFound();
+            }
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            var projects = await _searchService.Search(searchTerm, companyId);
+
+            ViewData["Title"] = "Results";
+            ViewData["CurrentPath"] = "Search Results";
+            ViewData["SearchTerm"] = searchTerm;
+
+            return View(projects);
+        }
+
 
         // GET: Projects/Create
         [Authorize(Roles="Admin,ProjectManager")]

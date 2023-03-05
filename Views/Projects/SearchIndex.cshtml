@@ -1,0 +1,62 @@
+﻿@model BugTracker.Models.SearchResult
+
+
+<div class="col-12 pt-3 pb-5">
+    <div class="mx-auto mt-3">
+        <span class="h1">Search results:</span><span class="h4 text-pink fst-italic fw-bold ms-5">@ViewData["SearchTerm"]</span>
+    </div>
+    @if(Model.Projects.Count == 0 && Model.Tickets.Count == 0)
+    {
+        <div class="row me-3">
+            <div class="rounded bg-dark text-center mt-3 p-5">
+                <h1 class="text-light">No Results Found</h1>
+            </div>
+        </div>
+    }
+    else
+    {
+       <div class="row me-2">
+        <div class="col-12">
+            <h5 class="mt-3">Projects:</h5>
+            <div class="rounded bg-dark">
+                @foreach(var project in Model.Projects)
+                {
+                    string projectDescriptionPreview = (project.Description.Count() > 150) ? project.Description.Substring(0, 150) : project.Description;
+                    <a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" class="text-light row p-3 text-decoration-none me-4">
+                        <div class="col-4 fw-bold">@project.Name</div>
+                        <div class="col-5 x-sm">@(projectDescriptionPreview + "...")</div>
+                        <div class="col-3">
+                            @((project.Company != null) ? project.Company.Name: "Company: "+project.CompanyId )
+                            <div class="mt-2">
+                                <div class="btn btn-light dropdown-toggle" id="projectMembersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Project Members
+                                </div>
+                                <ul class="dropdown-menu" aria-labelledby="projectMembersDropdown">
+                                    @foreach (var member in project.Members)
+                                    {
+                                        <li class="fst-italic x-sm dropdown-item">@member.FullName</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+            <h5 class="mt-3">Tickets:</h5>
+            <div class="rounded bg-dark">
+                @foreach (var ticket in Model.Tickets)
+                {
+                    string ticketDescriptionPreview = (ticket.Description.Count() > 80) ? ticket.Description.Substring(0, 80) : ticket.Description;
+                    <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="text-light row p-3 text-decoration-none me-4">
+                        <div class="col-4 fw-bold">Title: @ticket.Title</div>
+                        <div class="col-2">Submitter: @((ticket.OwnerUser != null) ? ticket.OwnerUser.FullName : "No Owner")</div>
+                        <div class="col-6">Description: <span class="x-sm">@(ticketDescriptionPreview + "...")</span></div>
+                    </a>
+                    <hr class="text-pink mx-auto" style="width: 95%" />
+                }
+            </div>
+        </div>
+    </div> 
+    }
+    
+</div>

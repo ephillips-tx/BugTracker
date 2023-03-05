@@ -127,12 +127,14 @@ namespace BugTracker.Services
                     try
                     {
                         ticket.DeveloperUserId = userId;
-                        // Will come back and replace "Development" ... likely with an enum
-                        ticket.TicketStatusId = (await LookupTicketStatusIdAsync("Development")).Value;
+                        ticket.TicketStatusId = (await LookupTicketStatusIdAsync(BTTicketStatus.Development.ToString())).Value;
                         await _context.SaveChangesAsync();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Console.WriteLine("***********>ERROR ASSIGNING TICKET<**********");
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine("*********************************************");
                         throw;
                     }
                 }

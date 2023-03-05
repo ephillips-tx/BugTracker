@@ -34,7 +34,7 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> Index()
         {
             BTUser btUser = await _userManager.GetUserAsync(User);
-            ViewData["CurrentPath"] = "Message Box";
+            ViewData["CurrentPath"] = "Inbox";
 
             List<Notification> notifications = await _notificationService.GetReceivedNotificationsAsync(btUser.Id);
 

@@ -1,6 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using BugTracker.Services.Interfaces;
+@using Microsoft.AspNetCore.Identity
 @using BugTracker.Models.Enums
 @inject SignInManager<BTUser> SignInManager
+@inject UserManager<BTUser> UserManager
+@inject IBTNotificationService _notificationService;
 
 @{
     string themeColor = "";
@@ -46,44 +49,46 @@
 <body>
     <div class="container-fluid overflow-hidden">
         <div class="row overflow-auto min-vh-100">
-                @if (SignInManager.IsSignedIn(User))
-                {
-                <div class="col-12 text-light">
-                    <div class="row fw-bolder blk-grad-top align-content-center" style="height:10vh">
-                        <div class="col col-sm-2">
-                            @*Company Logo ???*@
-                        </div>
-                        <div class="col col-sm-3">
-                            <a asp-action="Dashboard" asp-controller="Home" class="ps-2 text-light text-decoration-none">
-                                <i class="fs-4 bi-house"></i>
-                            </a>
-                            <small class="text-pink">&nbsp;<span class="fw-light text-secondary">Pages / &nbsp;</span>@ViewData["CurrentPath"]</small>
-                        </div>
-                        <div class="col col-sm-7">
-                            <div class="d-flex py-2">
-                                <form method="post" class="mx-auto">
-                                    <div class="input-group border-0">
-                                        <input type="text" class="form-control" placeholder="Search here..." />
-                                        <button type="submit" class="input-group-text border-0"><i class="bi bi-search"></i></button>
-                                    </div>
-                                </form>
-                                <div class="d-flex justify-content-end align-items-center mx-auto">
-                                    <a asp-controller="Tickets" asp-action="Create" class="btn btn-sm btn-danger mx-2 text-light">New Ticket</a>
-                                    <a href="/" class="text-decoration-none d-flex position-relative mx-4 px-2 link-style">
-                                        <i class="bi bi-bell"></i>
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger x-sm">
-                                            +99
-                                            <span class="visually-hidden">unread notifications</span>
-                                        </span>
-                                    </a>
-                                    <i class="bi bi-sliders mx-3"></i>
-                                    <a class="text-decoration-none link-style" href="javascript:document.getElementById('logoutForm').submit();"><i class="bi bi-box-arrow-left mx-3"></i></a>
+            @if (SignInManager.IsSignedIn(User))
+            {
+            BTUser btUser = await UserManager.GetUserAsync(User);
+            int notificationCount = (await _notificationService.GetReceivedNotificationsAsync(btUser.Id)).Where(n => n.Viewed == false).Count();
+            <div class="col-12 text-light">
+                <div class="row fw-bolder blk-grad-top align-content-center" style="height:10vh">
+                    <div class="col col-sm-2">
+                        @*Company Logo ???*@
+                    </div>
+                    <div class="col col-sm-3">
+                        <a asp-action="Dashboard" asp-controller="Home" class="ps-2 text-light text-decoration-none">
+                            <i class="fs-4 bi-house"></i>
+                        </a>
+                        <small class="text-pink">&nbsp;<span class="fw-light text-secondary">Pages / &nbsp;</span>@ViewData["CurrentPath"]</small>
+                    </div>
+                    <div class="col col-sm-7">
+                        <div class="d-flex py-2">
+                            <form asp-action="SearchIndex" asp-controller="Projects" method="post" class="mx-auto">
+                                <div class="input-group border-0">
+                                        <input type="text" name="SearchTerm" class="form-control" placeholder="Search here..." autocomplete="off" />
+                                    <button type="submit" class="input-group-text border-0"><i class="bi bi-search"></i></button>
                                 </div>
+                            </form>
+                            <div class="d-flex justify-content-end align-items-center mx-auto">
+                                <a asp-controller="Tickets" asp-action="Create" class="btn btn-sm btn-danger mx-2 text-light">New Ticket</a>
+                                    <a asp-controller="Notifications" asp-action="Index" class="text-decoration-none d-flex position-relative mx-4 px-2 link-style">
+                                    <i class="bi bi-bell"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger x-sm">
+                                        @notificationCount
+                                        <span class="visually-hidden">unread notifications</span>
+                                    </span>
+                                </a>
+                                <i class="bi bi-sliders mx-3"></i>
+                                <a class="text-decoration-none link-style" href="javascript:document.getElementById('logoutForm').submit();"><i class="bi bi-box-arrow-left mx-3"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
-                }
+            </div>
+            }
             
             <div class="col-12 col-md-2 col-xl-2 px-0 d-flex sticky-top @themeColor">
                 @********************

@@ -121,7 +121,6 @@ namespace BugTracker.Services
             {
                 return false;
             }
-
         }
 
         public async Task SendEmailNotificationsByRoleAsync(Notification notification, int companyId, string role)
@@ -138,7 +137,6 @@ namespace BugTracker.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

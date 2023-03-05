@@ -25,13 +25,15 @@ namespace BugTracker.Controllers
         private readonly IBTTicketService _ticketService;
         private readonly IBTFileService _fileService;
         private readonly IBTTicketHistoryService _historyService;
+        private readonly IBTNotificationService _notificationService;
 
         public TicketsController(UserManager<BTUser> userManager,
                                  IBTProjectService projectService,
                                  IBTLookupService lookupService,
                                  IBTTicketService ticketService,
                                  IBTFileService fileService,
-                                 IBTTicketHistoryService historyService)
+                                 IBTTicketHistoryService historyService,
+                                 IBTNotificationService notificationService)
         {
             _userManager = userManager;
             _projectService = projectService;
@@ -39,6 +41,7 @@ namespace BugTracker.Controllers
             _ticketService = ticketService;
             _fileService = fileService;
             _historyService = historyService;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> MyTickets()
@@ -132,10 +135,12 @@ namespace BugTracker.Controllers
             {
                 BTUser btUser = await _userManager.GetUserAsync(User);
                 Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(model.Ticket.Id);
+                Project project = await _projectService.GetProjectByIdAsync(oldTicket.ProjectId, btUser.CompanyId);
+                BTUser? devUser = project.Members.ToList().FirstOrDefault(u => u.Id == model.DeveloperId);
+
                 try
                 {
                     await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
-
                 }
                 catch (Exception)
                 {
@@ -143,6 +148,18 @@ namespace BugTracker.Controllers
                 }
                 // new ticket
                 Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(model.Ticket.Id);
+
+                Notification notification = new Notification
+                {
+                    TicketId = newTicket.Id,
+                    Title = $"{newTicket.Title} Now Assigned to {devUser?.FullName}",
+                    Message = $"Ticket {newTicket.Title} is now assigned to {devUser?.FullName}. The status has changed from {oldTicket.TicketStatus.ToString()} to {newTicket.TicketStatus.ToString()}.",
+                    Created = DateTime.Now,
+                    RecipientId = model.DeveloperId,
+                    SenderId = btUser.Id,
+                    Viewed = false
+                };
+                await _notificationService.AddNotificationAsync(notification);
                 await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
 
                 return RedirectToAction(nameof(Details), new { id = model.Ticket.Id });
@@ -286,7 +303,7 @@ namespace BugTracker.Controllers
                 try
                 {
                     ticket.Created = ticket.Created.ToUniversalTime();
-                    ticket.Updated = DateTime.UtcNow;
+                    ticket.Updated = DateTime.Now;
                     await _ticketService.UpdateTicketAsync(ticket);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -354,7 +371,7 @@ namespace BugTracker.Controllers
                     ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
                     ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
 
-                    ticketAttachment.Created = DateTime.UtcNow;
+                    ticketAttachment.Created = DateTime.Now;
                     ticketAttachment.UserId = _userManager.GetUserId(User);
 
                     await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
@@ -403,6 +420,39 @@ namespace BugTracker.Controllers
         {
             Ticket ticket = await _ticketService.GetTicketByIdAsync(id);
             ticket.Archived = true;
+
+            try
+            {
+                BTUser btUser = await _userManager.GetUserAsync(User);
+                BTUser projectManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId);
+                List<BTUser> recipients= new List<BTUser>();
+                if (ticket.OwnerUser != null)
+                {
+                    recipients.Add(ticket.OwnerUser);
+                    if(projectManager != null)
+                    {
+                        recipients.Add(projectManager);
+                    }
+                }
+                foreach (BTUser user in recipients)
+                {
+                    Notification notification = new Notification
+                    {
+                        TicketId = id,
+                        Title = $"Ticket {ticket.Title} has been archived",
+                        Message = $"{ticket.Title} has now been archived by {btUser.FullName}. The status was {ticket.TicketStatus}.",
+                        Created = DateTime.Now,
+                        RecipientId = user.Id,
+                        SenderId = btUser.Id,
+                        Viewed = false
+                    };
+                    await _notificationService.AddNotificationAsync(notification);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             await _ticketService.UpdateTicketAsync(ticket);
 
             return RedirectToAction(nameof(MyTickets));
@@ -435,6 +485,39 @@ namespace BugTracker.Controllers
         {
             Ticket ticket = await _ticketService.GetTicketByIdAsync(id);
             ticket.Archived = false;
+
+            try
+            {
+                BTUser btUser = await _userManager.GetUserAsync(User);
+                BTUser projectManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId);
+                List<BTUser> recipients = new List<BTUser>();
+                if (ticket.OwnerUser != null)
+                {
+                    recipients.Add(ticket.OwnerUser);
+                    if (projectManager != null)
+                    {
+                        recipients.Add(projectManager);
+                    }
+                }
+                foreach (BTUser user in recipients)
+                {
+                    Notification notification = new Notification
+                    {
+                        TicketId = id,
+                        Title = $"Ticket {ticket.Title} has been restored",
+                        Message = $"{ticket.Title} has now been restored by {btUser.FullName}. The status was {ticket.TicketStatus}.",
+                        Created = DateTime.Now,
+                        RecipientId = user.Id,
+                        SenderId = btUser.Id,
+                        Viewed = false
+                    };
+                    await _notificationService.AddNotificationAsync(notification);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             await _ticketService.UpdateTicketAsync(ticket);
 
             return RedirectToAction(nameof(MyTickets));
@@ -457,6 +540,7 @@ namespace BugTracker.Controllers
             return (await _ticketService.GetAllTicketsByCompanyAsync(companyId)).Any(t => t.Id == id);
         }
 
+        #region Google Data
         [HttpPost]
         public async Task<JsonResult> GglTicketsByProject()
         {
@@ -695,6 +779,7 @@ namespace BugTracker.Controllers
 
             return Json(chartData);
         }
+        #endregion
     }
     
 }
