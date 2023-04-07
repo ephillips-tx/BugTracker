@@ -1,0 +1,317 @@
+/*> IMPORTS <*/
+.login-panel-1 {
+  width: 20rem;
+  min-height: 40%;
+  position: absolute;
+  top: 13rem;
+  left: 5rem;
+  background-color: #fff;
+  z-index: 10000;
+}
+
+.login-panel-2 {
+  width: 22rem;
+  position: absolute;
+  top: 9rem;
+  left: 5rem;
+  background-color: #fff;
+  z-index: 10000;
+}
+
+*::-webkit-scrollbar {
+  width: 10px; /* width of the entire scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: deeppink; /* color of tracking area */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #333; /* color of scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 3px solid deeppink; /* creates padding around scroll thumb */
+}
+
+#project-members::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+#project-members::-webkit-scrollbar-track {
+  background: inherit;
+}
+
+#project-members::-webkit-scrollbar-thumb {
+  background-color: #333; /* color of scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 0px solid deeppink; /* creates padding around scroll thumb */
+}
+
+#chartdiv {
+  width: 100%;
+  height: 500px;
+}
+
+#panel1, #panel2, #panel3, #panel4 {
+  width: 25%;
+  height: 60px;
+  position: absolute;
+  top: -30px;
+  left: 30px;
+}
+
+#panel1, #chart4 {
+  background-image: linear-gradient(195deg, #79DFC1, #4DD4AC);
+  /*background-color: var(--bs-info);*/
+}
+
+#panel2, #chart3 {
+  background-image: linear-gradient(195deg, #C29FFA, #A370F7);
+  /*background-color: var(--bs-success);*/
+}
+
+#panel3, #chart2 {
+  background-image: linear-gradient(195deg, #D76B00, #DF8832);
+  /*background-color: var(--bs-warning);*/
+}
+
+#panel4, #chart1 {
+  background-image: linear-gradient(195deg, #8C1919, #993232);
+  /*background-color: maroon;*/
+}
+
+#donut1, #donut2, #donut3 {
+  background-image: none;
+}
+
+#donut1 > div > div:nth-child(1) > div > svg > g:nth-child(4) > text,
+#donut2 > div > div:nth-child(1) > div > svg > g:nth-child(3) > text,
+#donut3 > div > div:nth-child(1) > div > svg > g:nth-child(3) > text {
+  fill: transparent;
+}
+
+.donutChartLabel {
+  position: absolute;
+  top: 37%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+}
+
+/* Morris chart color */
+.chart-md > svg, .donut-legend {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+#chart3D {
+  box-shadow: 0px 4px 5px -1px var(--color1);
+}
+
+#chart3D, #donut, #donutChart, #morrisTicketPriority {
+  width: inherit;
+}
+
+#morrisTicketPriority {
+  max-height: 200px;
+}
+
+tspan {
+  fill: #fff;
+}
+
+#plotlyChart {
+  --h: 75%;
+  height: var(--h);
+  overflow-y: auto;
+  margin: 0rem auto;
+}
+
+svg.main-svg {
+  min-height: calc(var(--h) + 175px);
+}
+
+/*> BOOTSTRAP COLORS <*/
+/* CUSTOM COLORS */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.landing-page-bg {
+  background-image: url("/img/kelly-sikkema-ecHIFXN_qiE-unsplash.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.bg-flatwhite {
+  background-color: #f1f3f3;
+}
+
+.bg-shadow {
+  background-color: #241f1f;
+  border-radius: 10px;
+}
+
+.bg-pink, .btn-hover-pink:hover {
+  background-color: deeppink;
+}
+
+.bg-maroon {
+  background-color: maroon;
+}
+
+.bg-lightblack {
+  background-color: #333;
+}
+
+.amDark {
+  background-color: #30303d;
+  color: #fff;
+}
+
+.link-style {
+  color: #f8f9fa;
+}
+.link-style:active, .link-style:visited {
+  text-decoration: none;
+  color: inherit;
+}
+.link-style:hover, .link-style:focus {
+  color: maroon;
+}
+
+.x-sm {
+  font-size: x-small;
+}
+
+.blk-grad {
+  background-image: linear-gradient(#333, #201c1c);
+}
+
+.blk-grad-top {
+  background-image: linear-gradient(to top, #333, #201c1c);
+}
+
+.nav-link {
+  color: inherit;
+}
+
+#userBox {
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #f8f9fa;
+}
+
+.floating-nav {
+  position: fixed;
+  height: 95%;
+  width: inherit;
+}
+.floating-nav > ul > * {
+  width: 100%;
+  margin: 0.4rem 0;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #f8f9fa;
+}
+.floating-nav > ul > *:active, .floating-nav > ul > *:visited {
+  color: inherit;
+}
+.floating-nav > ul > *:hover, .floating-nav > ul > *:focus {
+  background-color: deeppink;
+  color: #f8f9fa;
+}
+
+.nav-link:active, .nav-link:focus {
+  color: inherit;
+}
+.nav-link:hover {
+  background-color: deeppink;
+  color: #f8f9fa;
+}
+
+#userBox:hover, #userBox:focus {
+  background-color: deeppink;
+  color: #f8f9fa;
+}
+
+.dash-card {
+  background-color: #241f1f;
+  box-shadow: 0px 8px 5px -5px maroon;
+  color: inherit;
+}
+
+.card-header-chart {
+  height: 290px;
+  position: absolute;
+  margin: 0rem auto;
+  padding: 0.5rem 0.3rem;
+  left: 0;
+  top: -40px;
+  width: 90%;
+}
+
+#project-members {
+  position: relative;
+  overflow: auto;
+}
+#project-members > * {
+  position: absolute;
+}
+
+.floating-arrs {
+  position: absolute;
+}
+.floating-arrs:first-child {
+  left: 0;
+  top: 50%;
+}
+.floating-arrs:last-child {
+  right: 0;
+  top: 50%;
+}
+
+.text-pink {
+  color: deeppink;
+}
+
+.text-maroon {
+  color: maroon;
+}
+
+span.text-size {
+  font-size: 0.7rem;
+}
+
+progress {
+  accent-color: maroon;
+}
+
+.transparency-light {
+  opacity: 0.8;
+}
+
+.note-editor {
+  background: white;
+  color: #333;
+}
+
+.note-btn.dropdown-toggle:after {
+  content: none;
+}
+
+/******************************
+    RESPONSIVE 
+*/
+
+/*# sourceMappingURL=styles.css.map */

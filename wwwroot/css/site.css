@@ -295,6 +295,10 @@ svg.main-svg {
     color: maroon;
 }
 
+span.text-size {
+    font-size: .7rem;
+}
+
 progress {
     accent-color: maroon;
 }
@@ -309,4 +313,24 @@ progress {
 }
 .note-btn.dropdown-toggle:after {
     content: none;
+}
+
+/******************************
+    RESPONSIVE 
+*/
+
+@media (min-width: 576px) {
+
+}
+
+@media (min-width: 768px) {
+
+}
+
+@media (min-width: 992px) {
+
+}
+
+@media (min-width: 1200px) {
+
 }
