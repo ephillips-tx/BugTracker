@@ -53,8 +53,8 @@
 }
 
 #panel1, #panel2, #panel3, #panel4 {
-  width: 25%;
-  height: 60px;
+  width: 42px;
+  height: 42px;
   position: absolute;
   top: -30px;
   left: 30px;
@@ -132,6 +132,7 @@ svg.main-svg {
 
 /*> BOOTSTRAP COLORS <*/
 /* CUSTOM COLORS */
+/* FONT SIZES */
 html, body {
   margin: 0;
   padding: 0;
@@ -143,6 +144,18 @@ html {
 
 body {
   min-height: 100vh;
+}
+
+footer {
+  padding: 0;
+  position: fixed;
+  bottom: 0;
+  background-color: rgba(128, 0, 0, 0.9);
+  color: #f8f9fa;
+}
+
+li > a > i {
+  font-size: 2rem;
 }
 
 .landing-page-bg {
@@ -200,21 +213,23 @@ body {
   background-image: linear-gradient(to top, #333, #201c1c);
 }
 
-.nav-link {
-  color: inherit;
-}
-
 #userBox {
-  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  /*padding: .2rem .5rem .2rem .5rem;*/
   border-radius: 10px;
   text-decoration: none;
   color: #f8f9fa;
 }
 
+#welcomeName {
+  display: block;
+  font-size: clamp(1.5rem, 2.5rem, 4vw);
+  font-family: "Lobster", cursive;
+}
+
 .floating-nav {
-  position: fixed;
-  height: 95%;
-  width: inherit;
+  /*position: fixed;
+    height: 95%;
+    width: inherit;*/
 }
 .floating-nav > ul > * {
   width: 100%;
@@ -232,6 +247,9 @@ body {
   color: #f8f9fa;
 }
 
+.nav-link {
+  color: inherit;
+}
 .nav-link:active, .nav-link:focus {
   color: inherit;
 }
@@ -240,6 +258,13 @@ body {
   color: #f8f9fa;
 }
 
+.nav-icons {
+  font-size: 2rem;
+}
+
+#userBox {
+  padding: 1rem;
+}
 #userBox:hover, #userBox:focus {
   background-color: deeppink;
   color: #f8f9fa;
@@ -249,6 +274,12 @@ body {
   background-color: #241f1f;
   box-shadow: 0px 8px 5px -5px maroon;
   color: inherit;
+}
+.dash-card div div:nth-child(2) {
+  padding: 1.5rem;
+}
+.dash-card div div:nth-child(2) p {
+  font-size: 3rem;
 }
 
 .card-header-chart {

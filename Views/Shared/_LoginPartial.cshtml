@@ -10,17 +10,25 @@
     string roleName = (await RolesService.GetUserRolesAsync(btUser)).FirstOrDefault();
 }
 
-<div class="py-sm-2 mx-auto ms-sm-0 flex-shrink-1">
+<div class="py-sm-2 flex-shrink-1">
     
     @if (SignInManager.IsSignedIn(User))
     {
         <div id="userBox" class="bg-shadow">
-            <div class="pb-0 mb-0">Welcome,</div>
-            <span class="badge bg-maroon">@roleName</span>
-            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-light" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="" width="28" height="28" class="rounded-circle">
-                <span class="d-none d-sm-inline mx-1 text-size">@btUser.FullName</span>
-            </a>
+            <div class="pb-0 mb-0 d-flex align-content-center">
+                <div class="flex-grow-1">
+                    <span>Welcome,</span>
+                    <span id="welcomeName">@btUser.FirstName</span>
+                </div>
+                <div class="">
+                    <span class="badge bg-maroon">@roleName</span>
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-light" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="" width="28" height="28" class="rounded-circle">
+                        <span class="d-none d-sm-inline mx-1 text-size">@btUser.FullName</span>
+                    </a>
+                </div>
+            </div>
+            
             <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
                 <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Profile</a></li>
                 <li>

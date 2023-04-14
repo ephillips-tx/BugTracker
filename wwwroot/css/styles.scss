@@ -13,6 +13,17 @@ $backgroundDark: #241f1f;
 $darkGray: #30303d;
 $flatwhite: #f1f3f3;
 $whiteText: #fff;
+$pinkTransparency: rgba(255,20,147,.8);
+$maroonTransparency: rgba(128,0,0,.9);
+
+/* FONT SIZES */
+$clampVal: calc(12vw + 1rem);
+$fs-xl: clamp(3.5rem, $clampVal, 15rem);
+$fs-600: 1.5rem;
+$fs-500: 1.25rem;
+$fs-400: 1rem;
+
+$fancyFont: 'Lobster', cursive;
 
 html, body {
     margin: 0;
@@ -25,6 +36,18 @@ html {
 
 body {
     min-height: 100vh;
+}
+
+footer {
+    padding: 0;
+    position: fixed;
+    bottom: 0;
+    background-color: $maroonTransparency;
+    color: $bootstrapLight;
+}
+
+li > a > i {
+    font-size: calc($fs-600 + .5rem);
 }
 
 .landing-page-bg {
@@ -83,19 +106,30 @@ body {
     background-image: linear-gradient(to top,#333,#201c1c);
 }
 
-.nav-link {
-    color: inherit;
-}
-
 #userBox {
-    padding: .2rem .5rem .2rem .5rem;
+    /*padding: .2rem .5rem .2rem .5rem;*/
     border-radius: 10px;
     text-decoration: none;
     color: $bootstrapLight;
 }
 
+#welcomeName {
+    display: block;
+    font-size: clamp($fs-600, calc($fs-600 + 1rem),4vw);
+    font-family: $fancyFont;
+}
+
 .floating-nav {
+  /*position: fixed;
+    height: 95%;
+    width: inherit;*/
     & > ul > * {
+        width: 100%;
+        margin: .4rem 0;
+        padding: .2rem .5rem .2rem .5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        color: $bootstrapLight;
         &:active, &:visited {
             color: inherit;
         }
@@ -103,19 +137,12 @@ body {
             background-color: deeppink;
             color: $bootstrapLight;
         }
-        width: 100%;
-        margin: .4rem 0;
-        padding: .2rem .5rem .2rem .5rem;
-        border-radius: 10px;
-        text-decoration: none;
-        color: $bootstrapLight;
     }
-    position: fixed;
-    height: 95%;
-    width: inherit;
+    
 }
 
 .nav-link {
+    color: inherit;
     &:active, &:focus {
         color: inherit;
     }
@@ -125,7 +152,13 @@ body {
     }
 }
 
+.nav-icons {
+    font-size: 2rem;
+}
+
 #userBox {
+    padding: 1rem;
+
     &:hover, &:focus {
         background-color: deeppink;
         color: $bootstrapLight;
@@ -136,6 +169,15 @@ body {
     background-color: $backgroundDark;
     box-shadow: 0px 8px 5px -5px maroon;
     color: inherit;
+
+    div {
+        div:nth-child(2) {
+            padding: 1.5rem;
+            p {
+                font-size: calc($fs-600 + 1.5rem);
+            }
+        }
+    }
 }
 
 .card-header-chart {
