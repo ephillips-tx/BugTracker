@@ -150,7 +150,7 @@ footer {
   padding: 0;
   position: fixed;
   bottom: 0;
-  background-color: rgba(128, 0, 0, 0.9);
+  background-color: rgba(36, 36, 31, 0.9);
   color: #f8f9fa;
 }
 
@@ -213,23 +213,16 @@ li > a > i {
   background-image: linear-gradient(to top, #333, #201c1c);
 }
 
-#userBox {
-  /*padding: .2rem .5rem .2rem .5rem;*/
-  border-radius: 10px;
-  text-decoration: none;
-  color: #f8f9fa;
-}
-
 #welcomeName {
-  display: block;
-  font-size: clamp(1.5rem, 2.5rem, 4vw);
+  /*display: block;*/
+  font-size: clamp(1.5rem, 2.5rem, 3vw);
   font-family: "Lobster", cursive;
 }
 
 .floating-nav {
-  /*position: fixed;
-    height: 95%;
-    width: inherit;*/
+  position: relative;
+  z-index: 1000;
+  width: inherit;
 }
 .floating-nav > ul > * {
   width: 100%;
@@ -264,6 +257,9 @@ li > a > i {
 
 #userBox {
   padding: 1rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #f8f9fa;
 }
 #userBox:hover, #userBox:focus {
   background-color: deeppink;
@@ -344,5 +340,10 @@ progress {
 /******************************
     RESPONSIVE 
 */
+@media (min-width: 768px) {
+  .floating-nav {
+    position: fixed;
+  }
+}
 
 /*# sourceMappingURL=styles.css.map */
