@@ -3,10 +3,14 @@
 #nullable disable
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using BugTracker.Models;
+using BugTracker.Services;
+using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,13 +21,16 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<BTUser> _userManager;
         private readonly SignInManager<BTUser> _signInManager;
+        private readonly IBTFileService _fileService;
 
         public IndexModel(
             UserManager<BTUser> userManager,
-            SignInManager<BTUser> signInManager)
+            SignInManager<BTUser> signInManager,
+            IBTFileService fileService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -59,6 +66,17 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [NotMapped]
+            [DataType(DataType.Upload)]
+            public IFormFile AvatarFormFile { get; set; }
+
+            [DisplayName("Avatar")]
+            public string AvatarFileName { get; set; }
+            public byte[] AvatarFileData { get; set; }
+
+            [Display(Name = "File Extension")]
+            public string AvatarContentType { get; set; }
         }
 
         private async Task LoadAsync(BTUser user)
@@ -66,11 +84,20 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
+            var avatarFormFile = user.AvatarFormFile;
+            var avatarFileName = user.AvatarFileName;
+            var avatarFileData = user.AvatarFileData;
+            var avatarContentType = user.AvatarContentType;
+
             Username = userName;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber
+                , AvatarFormFile = avatarFormFile
+                , AvatarFileName = avatarFileName
+                , AvatarFileData = avatarFileData
+                , AvatarContentType = avatarContentType
             };
         }
 
@@ -110,6 +137,23 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            try
+            {
+                if (Input.AvatarFormFile != null)
+                {
+                    user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(Input.AvatarFormFile);
+                    user.AvatarFileName = Input.AvatarFormFile.FileName;
+                    user.AvatarContentType = Input.AvatarFormFile.ContentType;
+
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

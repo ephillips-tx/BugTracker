@@ -19,7 +19,7 @@
     }
     else 
     {
-        themeColor = "bg-lightblack text-light";
+        themeColor = "bg-lightblack text-light pb-5";
         navTheme = "text-light";
         bgTheme = "overflow-hidden";
     }
@@ -39,7 +39,7 @@
     <!-- Fonts and icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto:300,400,500,700,900&family=Lobster&display=swap" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto&family=Lobster&display=swap" />
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
@@ -58,12 +58,12 @@
                 int notificationCount = (await _notificationService.GetReceivedNotificationsAsync(btUser.Id)).Where(n => n.Viewed == false).Count();
                 <div class="col-12 text-light">
                     <div class="row fw-bolder blk-grad-top align-content-center pt-3">
-                        <div class="col-12 col-sm-2">
+                        <div class="col-12 col-sm-1">
                             @*Company Logo or user profile image ???*@
                         </div>
-                        <div class="col-12 col-sm-3">
+                        <div class="col-12 col-sm-4">
                             <div class="d-flex flex-wrap">
-                                <a asp-action="Dashboard" asp-controller="Home" class="ps-2 text-light text-decoration-none">
+                                <a asp-action="Dashboard" asp-controller="Home" class="text-light text-decoration-none">
                                     <i class="bi-house nav-icons"></i>
                                 </a>
                                 <small class="ms-auto align-self-center text-pink">&nbsp;<span class="fw-light text-secondary">Pages / &nbsp;</span>@ViewData["CurrentPath"]</small>
@@ -86,7 +86,7 @@
                                             <span class="visually-hidden">unread notifications</span>
                                         </span>
                                     </a>
-                                    <i class="bi bi-sliders mx-3"></i>
+                                    @*<i class="bi bi-sliders mx-3"></i>*@
                                     <a class="text-decoration-none link-style" href="javascript:document.getElementById('logoutForm').submit();"><i class="bi bi-box-arrow-left mx-3"></i></a>
                                 </div>
                             </div>
@@ -210,7 +210,6 @@
                         @RenderBody()
                     </div>
                 </main>
-                
             </div>
             @if (SignInManager.IsSignedIn(User))
             {
@@ -262,11 +261,11 @@
                                 }
                             </ul>
                         </li>
-                        <li>
+                        @*<li>
                             <a asp-area="" asp-controller="Notifications" asp-action="Index" class="nav-link px-sm-0 px-2">
                                 <i class="bi-mailbox2"></i><span class="ms-1 d-none d-sm-inline">Notifications</span>
                             </a>
-                        </li>
+                        </li>*@
                         @if (User.IsInRole(nameof(Roles.Admin)))
                         {
                             <li class="dropdown">

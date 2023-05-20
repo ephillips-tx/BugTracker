@@ -125,7 +125,7 @@
 	</div>
 	<div class="row mt-5">
 		<div class="col-12 col-lg-9">
-			<div class="card dash-card col m-1 p-2">
+			<div class="card dash-card col p-2 p-md-1">
 				<div class="card-body" style="height:600px">
 					<h5>Project: Tickets vs Developers</h5>
 					<p class="text-pink">[amCharts]</p>
@@ -137,7 +137,7 @@
         <div class="col-8 col-md-6 col-lg-3 mt-5 mt-lg-0 mx-auto mx-lg-0">
 			<div class="card p-3 p-sm-2 p-md-1 dash-card">
 				<div class="card-header-chart position-relative rounded" id="chart4">
-					<div class="inner-header px-5">
+					<div class="inner-header px-4 px-sm-0 px-lg-4">
 						<!-- ChartJS: Pie/Doughnut -->
 						<!--  Chart.js Canvas Tag -->
 						<canvas id="donutChart"></canvas>
@@ -187,9 +187,9 @@
 									@foreach (var project in Model.Projects.OrderByDescending(d => d.StartDate))
 									{
 										<tr>
-											<td><a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" style="color:#f8f9fa"><strong>@project.Name</strong></a> </td>
-											<td><span style="font-size:small;color: #f8f9fa">@project.StartDate.ToString("MM.dd.yyyy")</span></td>
-											<td><span style="font-size:small;color: #f8f9fa">@project.EndDate.ToString("MM.dd.yyyy")</span></td>
+											<td><a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" class="cell-text"><strong>@project.Name</strong></a> </td>
+											<td><span class="cell-text">@project.StartDate.ToString("M.dd.yy")</span></td>
+											<td><span class="cell-text">@project.EndDate.ToString("M.dd.yy")</span></td>
 											@{
 												string badgeColor = "bg-info";
 												switch (project.ProjectPriority?.Name)
@@ -216,8 +216,6 @@
 								</tbody>
 							</table>
 						</div>
-					</div>
-					<div class="card-footer">
 					</div>
 				</div>
 			</div>
@@ -246,11 +244,11 @@
 									@foreach (var ticket in Model.Tickets.OrderByDescending(d => d.Created))
 									{
 										<tr>
-											<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" style="color:#f8f9fa"><strong>@ticket.Title</strong></a> </td>
+											<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" class="cell-text"><strong>@ticket.Title</strong></a></td>
 											<td>
 												@if (ticket.DeveloperUserId != null)
 												{
-													<span class="text-light">@ticket.DeveloperUser?.FullName</span>
+													<span class="cell-text">@ticket.DeveloperUser?.FullName</span>
 												}
 												else
 												{
@@ -259,15 +257,15 @@
 											</td>
 											@if (ticket.TicketStatus.Name == "New")
 											{
-												<td><span class="btn btn-small btn-outline-success">@ticket.TicketStatus.Name</span></td>
+												<td><span class="btn btn-sm btn-outline-success">@ticket.TicketStatus.Name</span></td>
 											}
 											else if (ticket.TicketStatus.Name == "Development")
 											{
-												<td><span class="btn btn-small btn-outline-info">@ticket.TicketStatus.Name</span></td>
+												<td><span class="btn btn-sm btn-outline-info">@ticket.TicketStatus.Name</span></td>
 											}
 											else
 											{
-												<td><span class="btn btn-small btn-outline-secondary">@ticket.TicketStatus.Name </span></td>
+												<td><span class="btn btn-sm btn-outline-secondary">@ticket.TicketStatus.Name</span></td>
 											}
 											@{
 												string badgeColor = "btn-outline-info";
@@ -286,8 +284,8 @@
 														break;
 												}
 											}
-											<td><span class="btn btn-sm @badgeColor">@ticket.TicketPriority.Name </span></td>
-											<td><span style="font-size:small;color: #f8f9fa">@ticket.Created.ToString("MM-dd-yyyy")</span></td>
+											<td><span class="btn btn-sm @badgeColor">@ticket.TicketPriority.Name</span></td>
+											<td><span style="font-size:small;color: #f8f9fa">@ticket.Created.ToString("M.dd.yy")</span></td>
 											<td>
 												<a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id"><i class="fs-5 bi-justify"></i></a>
 											</td>
@@ -296,9 +294,6 @@
 								</tbody>
 							</table>
 						</div>
-
-					</div>
-					<div class="card-footer">
 					</div>
 				</div>
 			</div>
@@ -306,7 +301,7 @@
 		@*Members Table*@
 		<div class="col-md-6">
 			<div class="">
-				<div class="card dash-card m-1 p-2">
+				<div class="card dash-card m-1 px-2 pt-2 pb-0">
 					<div class="card-header">
 						<h2>Members</h2>
 						<hr />
@@ -314,10 +309,20 @@
 					<div class="card-body" style="overflow-y:auto;height:600px;">
 						@foreach (BTUser member in Model.Members)
 						{
-							<a asp-action="MemberProfile" asp-controller="Home" asp-route-memberId="@member.Id" class="link-style">
-								<span style="font-weight:bold">@member.FullName</span>
-								<h6 style="font-size:small;color:deeppink">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</h6>
-							</a>
+                            <a asp-action="MemberProfile" asp-controller="Home" asp-route-memberId="@member.Id" class="link-style text-decoration-none d-flex">
+                                <span class="fw-bold flex-grow-1">
+									@member.FullName
+									<h6 class="text-pink small">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</h6>
+								</span>
+								@if(member.AvatarFileData != null)
+								{
+									<img class="rounded-circle profileImgIcon" src="data:image/*;base64,@(Convert.ToBase64String(member.AvatarFileData))" alt="profile picture">
+								}
+								else
+								{
+									<img class="rounded-circle profileImgIcon" src="~/img/defaultUserImage.png" alt="profile picture">
+								}
+                            </a>
 							<hr />
 						}
 					</div>

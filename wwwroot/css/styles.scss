@@ -2,6 +2,8 @@
 @import "./loginPanel";
 @import "./customScrollbar";
 @import "./chartsGraphs";
+@import "./_tableStyles.scss";
+@import "./modalStyles.scss";
 
 /*> BOOTSTRAP COLORS <*/
 $bootstrapInfo: #0dcaf0;
@@ -9,6 +11,7 @@ $bootstrapSuccess: #198754;
 $bootstrapLight: #f8f9fa;
 
 /* CUSTOM COLORS */
+$primaryText: $bootstrapLight;
 $backgroundDark: #241f1f;
 $darkGray: #30303d;
 $flatwhite: #f1f3f3;
@@ -25,6 +28,7 @@ $fs-500: 1.25rem;
 $fs-400: 1rem;
 
 $fancyFont: 'Lobster', cursive;
+$profileImgSize: 60px;
 
 html, body {
     margin: 0;
@@ -44,7 +48,7 @@ footer {
     position: fixed;
     bottom: 0;
     background-color: $darkTransparency;
-    color: $bootstrapLight;
+    color: $primaryText;
 }
 
 li > a > i {
@@ -124,7 +128,7 @@ li > a > i {
         padding: .2rem .5rem .2rem .5rem;
         border-radius: 10px;
         text-decoration: none;
-        color: $bootstrapLight;
+        color: $primaryText;
 
         &:active, &:visited {
             color: inherit;
@@ -132,19 +136,35 @@ li > a > i {
 
         &:hover, &:focus {
             background-color: deeppink;
-            color: $bootstrapLight;
+            color: $primaryText;
         }
     }
 }
 
+.nav-pills {
+    .nav-item {
+        .nav-link {
+            background-color: $darkTransparency;
+            color: inherit;
+
+            &:hover {
+                background-color: deeppink;
+                color: $primaryText;
+            }
+        }
+    }
+}
 .nav-link {
     color: inherit;
+    text-align: center;
+
     &:active, &:focus {
         color: inherit;
     }
+
     &:hover {
         background-color: deeppink;
-        color: $bootstrapLight;
+        color: $primaryText;
     }
 }
 
@@ -152,15 +172,25 @@ li > a > i {
     font-size: 2rem;
 }
 
+.form-control {
+    background-color: $flatwhite;
+    &:disabled {
+        color: slategray;
+    }
+}
+.form-label {
+    color: $darkTransparency;
+}
+
 #userBox {
     padding: 1rem;
     border-radius: 10px;
     text-decoration: none;
-    color: $bootstrapLight;
+    color: $primaryText;
 
     &:hover, &:focus {
         background-color: deeppink;
-        color: $bootstrapLight;
+        color: $primaryText;
     }
 }
 
@@ -210,6 +240,43 @@ li > a > i {
     position: absolute;
 }
 
+.overlay {
+    display: block;
+    position: relative;
+    max-width: 200px;
+    text-align: center;
+
+    img:first-child {
+        width: 100%;
+    }
+
+    i{
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $bootstrapLight;
+    }
+
+    &:hover {
+        opacity: .5;
+
+        i {
+            display: block;
+            opacity: 1;
+        }
+    }
+}
+
+.img-thumbnail {
+    max-width: 200px;
+}
+
+.profileImgIcon {
+    height: $profileImgSize;
+    width: $profileImgSize;
+}
 
 .text-pink {
     color: deeppink;
@@ -232,7 +299,7 @@ progress {
 }
 
 .note-editor {
-    background: white;
+    background: $flatwhite;
     color: #333;
 }
 

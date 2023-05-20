@@ -372,6 +372,7 @@ namespace BugTracker.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"**** ERROR **** - Error getting user projects list. --> {ex.Message}");
+                Console.WriteLine(ex.TargetSite);
                 throw;
             }
         }

@@ -16,17 +16,20 @@ namespace BugTracker.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IBTCompanyInfoService _companyInfoService;
         private readonly IBTProjectService _projectService;
+        private readonly IBTFileService _fileService;
         private readonly UserManager<BTUser> _userManager;
 
         public HomeController(ILogger<HomeController> logger,
                                       IBTCompanyInfoService companyInfoService,
                                       IBTProjectService projectService,
-                                      UserManager<BTUser> userManager)
+                                      UserManager<BTUser> userManager,
+                                      IBTFileService fileService)
         {
             _logger = logger;
             _companyInfoService = companyInfoService;
             _projectService = projectService;
             _userManager = userManager;
+            _fileService = fileService;
         }
 
         public IActionResult Index()
@@ -75,6 +78,40 @@ namespace BugTracker.Controllers
             ViewData["CurrentPath"] = "Member Profile";
 
             return View(user);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MemberProfile(BTUser btUser)
+        {
+            if (btUser != null)
+            {
+                BTUser user = await _userManager.FindByIdAsync(btUser.Id);
+                user.Company = await _companyInfoService.GetCompanyInfoByIdAsync(user.CompanyId);
+                user.Projects = await _projectService.GetUserProjectsAsync(user.Id);
+
+                try
+                {
+                    if (btUser.AvatarFormFile != null)
+                    {
+                        user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(btUser.AvatarFormFile);
+                        user.AvatarFileName = btUser.AvatarFormFile.FileName;
+                        user.AvatarContentType = btUser.AvatarFormFile.ContentType;
+
+                        await _userManager.UpdateAsync(user);
+                    }
+                    ViewData["CurrentPath"] = "Member Profile";
+                    return View(user);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("********>  ERROR UPDATING USER IMAGE  <********");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("********>  ERROR UPDATING USER IMAGE  <********");
+                    throw;
+                }
+                
+            }
+            return View(btUser);
         }
 
         public IActionResult Privacy()

@@ -1,0 +1,12 @@
+$bootstrapLight: #f8f9fa;
+$primaryText: $bootstrapLight;
+$backgroundDark: #241f1f;
+
+.modal {
+    .modal-dialog {
+        .modal-content {
+            background-color: $backgroundDark;
+            color: $primaryText;
+        }
+    }
+}

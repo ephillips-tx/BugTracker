@@ -65,6 +65,10 @@ $iconPanelDim: 42px;
     width: inherit;
 }
 
+canvas#donutChart {
+    width: clamp(7rem, 9rem + 50%, 15rem); 
+}
+
 #morrisTicketPriority {
     max-height: 200px;
 }

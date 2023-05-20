@@ -1,0 +1,24 @@
+/* FONT SIZES */
+/*$clampVal: calc(12vw + 1rem);
+$cfs-xl: clamp(3.5rem, $clampVal, 15rem);*/
+$cfs-600: 1.25rem;
+$cfs-500: 1rem;
+$cfs-400: .8rem;
+
+/* COLORS */
+$bootstrapLight: #f8f9fa;
+$secondaryColor: rgba(255,20,147,1);
+
+.cell-text {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: $cfs-400;
+    color: $bootstrapLight;
+
+    &:hover {
+        color: $secondaryColor;
+    }
+
+    &:focus, &:active {
+        color: $bootstrapLight;
+    }
+}

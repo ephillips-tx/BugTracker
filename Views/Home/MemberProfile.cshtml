@@ -11,29 +11,89 @@
     BTUser btUser = await UserManager.GetUserAsync(User);
     ViewData["Title"] = btUser.FullName.ToString() + " - Member Profile";
     string roleName = (await RolesService.GetUserRolesAsync(btUser)).FirstOrDefault();
+    string overlay = "";
 }
 
-<div class="col-md-4 mb-4">
-    <div class="card dash-card p-4 me-4">
-        @if (Model.AvatarFileData != null)
-        {
-            <img src="data:image/*;base64,@(Convert.ToBase64String(Model.AvatarFileData))" class="img-thumbnail" style="max-width: 200px;" />
-        }
-        else
-        {
-            <img src="~/img/defaultUserImage.png" class="img-thumbnail" style="max-width: 200px;" />
-        }
+@if (btUser.Id == Model.Id)
+{
+    overlay = "overlay";
+    <!-- Change Profile Image Modal -->
+    <div class="modal fade" id="changeProfImgModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Change Profile Image</h5>
+                    <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserName" />
+                        <input type="hidden" asp-for="FirstName" />
+                        <input type="hidden" asp-for="LastName" />
+                        <input type="hidden" asp-for="Email" />
+                        <input type="hidden" asp-for="CompanyId" />
+                        <input type="hidden" asp-for="AvatarFileName" />
+                        <input type="hidden" asp-for="AvatarFileData" />
+                        <input type="hidden" asp-for="AvatarContentType" />
+
+                        <div class="form-group">
+                            <label class="control-label">Profile Image</label>
+                            <input asp-for="AvatarFormFile" class="form-control" type="file" accept=".png, .jpg, .jpeg, .gif"
+                                   onchange="document.getElementById('avatarFileData').src = window.URL.createObjectURL(this.files[0])" />
+                            <span asp-validation-for="AvatarFormFile" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Image Preview</label>
+                            @if (btUser?.AvatarFileData != null)
+                            {
+                                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="data:image/*;base64,@(Convert.ToBase64String(btUser.AvatarFileData))" />
+                            }
+                            else
+                            {
+                                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="" />
+                            }
+                        </div>
+                    
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-danger" value="Submit" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>                                                  
+}
+
+<div class="col-md-4 mt-2 mb-4">
+    <div class="card dash-card p-4">
+        <a data-bs-toggle="modal" data-bs-target="#changeProfImgModal" class="@overlay">
+            @if (Model.AvatarFileData != null)
+            {
+                <img src="data:image/*;base64,@(Convert.ToBase64String(Model.AvatarFileData))" class="img-thumbnail" />
+            }
+            else
+            {
+                <img src="~/img/defaultUserImage.png" class="img-thumbnail" style="max-width: 200px;" />
+            }
+            @if(!String.IsNullOrEmpty(overlay))
+            {
+                <i class="bi bi-file-image fs-1"></i>
+            }
+        </a>
         <h4>@Model.FullName</h4>
         <span class="badge bg-warning w-25">@roleName</span>
         <div><span class="fw-bold">Company:</span> @Model.Company.Name</div>
         <a asp-action="Create" asp-controller="Notifications" class="btn btn-sm btn-danger my-3 w-25 x-sm"><i class="bi-envelope"></i>&nbsp;<span class="">Message</span></a>
     </div>
 </div>
-<div class="col-md-8 mb-4"></div>
+<div class="col-md-8 mb-4">
+    <a asp-action="AllUsers" asp-controller="Home" class="mb-3">Back to Member's list</a>
+</div>
 @foreach (Project project in Model.Projects)
 {
     <div class="col-md-4 mb-5">
-        <div class="card dash-card p-4 me-4">
+        <div class="card dash-card p-4">
             <div class="fw-bold mb-2">
                 <div class="text-pink">Project: @project.Name</div>
                 <span style="font-size:small;color: #f8f9fa">@project.StartDate.ToString("MM.dd.yyyy")</span>
@@ -87,6 +147,5 @@
     </div>
 }
 
-<div class="mt-4 mb-5">
-    <a asp-action="AllUsers" asp-controller="Home" class="">Back to Member's list</a>
+<div class="mb-5">
 </div>
